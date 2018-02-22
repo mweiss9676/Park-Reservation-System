@@ -27,24 +27,36 @@ namespace Capstone.Menus
 
                 if (input == "1")
                 {
+                    Console.WriteLine("Viewing All Parks...");
+                    Console.WriteLine();
 
-                    Console.WriteLine("Viewing All Parks");
                     ViewParksDAL v = new ViewParksDAL();
-                    v.ViewParks(connectionString);
-                    List<string> output = new List<string>();
-                    foreach (Park p in v.ViewParks(connectionString))
-                    {
-                        output.Add(p.Name);
-                        output.Add(p.Location);
-                        output.Add(p.EstablishDate.ToString());
-                    }
-                    PrintMenuSingleSpace(output.ToArray());
+                    List<Park> parks = v.ViewParks(connectionString);
+
+                    ChooseParkMenu(parks);
                 }
                 if (input.ToLower() == "q")
                 {
                     Environment.Exit(0);
                 }
             }
+        }
+
+        public static void ChooseParkMenu(List<Park> parks)
+        {
+            List<string> menu = new List<string>();
+            for (int i = 1; i <= parks.Count; i++)
+            {
+                menu.Add(i + ") " + parks[i - 1].Name);
+            }
+            PrintMenuDoubleSpaced(menu.ToArray());
+            string result = CLIHelper.GetString("Select A Park For Further Details");
+
+        }
+
+        public static void ParkInformationScreen()
+        {
+
         }
 
         private static void PrintMenuDoubleSpaced(string[] menu)
