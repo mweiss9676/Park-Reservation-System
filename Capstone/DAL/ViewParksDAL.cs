@@ -75,16 +75,55 @@ namespace Capstone.DAL
                         //p.Area = Convert.ToInt32(reader["area"]);
                         //p.Visitors = Convert.ToInt32(reader["visitors"]);
                         //p.Description = Convert.ToString(reader["description"]);
-
                     }
                 }
-
             }
             catch (SqlException ex)
             {
                 Console.WriteLine("That doesn't exist");
             }
             return parkInfo;
+        }
+
+        public bool DoesParkExist(string name, string connectionString)
+        {
+            bool doesExist = false;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM park WHERE @name = park.name", conn);
+                    cmd.Parameters.AddWithValue("@name", name);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Park p = new Park();
+                        p.Name = Convert.ToString(reader["name"]);
+
+                        if(name != "")
+                        {
+                            doesExist = true;
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("That doesn't exist");
+            }
+
+            return doesExist;
+        }
+
+        public static Park GetParkByName(string name)
+        {
+            Park p = new Park();
+            return p;
         }
     }
 }

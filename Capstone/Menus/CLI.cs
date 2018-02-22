@@ -62,6 +62,8 @@ namespace Capstone.Menus
             CLIHelper.GetString("Select a Command");
         }
 
+
+
         private static void PrintMenuDoubleSpaced(string[] menu)
         {
             foreach (string s in menu)
