@@ -69,12 +69,7 @@ namespace Capstone.DAL
                         parkInfo.Add(Convert.ToString(reader["area"]));
                         parkInfo.Add(Convert.ToString(reader["visitors"]));
                         parkInfo.Add(Convert.ToString(reader["description"]));
-                        //parkInfo.Add(p.Name = Convert.ToString(reader["name"]));
-                        //parkInfo.Add(p.Location = Convert.ToString(reader["location"]));
-                        //p.EstablishDate = (sConvert.ToDateTime(reader["establish_date"]);
-                        //p.Area = Convert.ToInt32(reader["area"]);
-                        //p.Visitors = Convert.ToInt32(reader["visitors"]);
-                        //p.Description = Convert.ToString(reader["description"]);
+
                     }
                 }
             }
@@ -85,7 +80,7 @@ namespace Capstone.DAL
             return parkInfo;
         }
 
-        public bool DoesParkExist(string name, string connectionString)
+        public static bool DoesParkExist(string name, string connectionString)
         {
             bool doesExist = false;
 
@@ -120,9 +115,45 @@ namespace Capstone.DAL
             return doesExist;
         }
 
-        public static Park GetParkByName(string name)
+        public Park GetParkByName(string name, string connectionString)
         {
             Park p = new Park();
+            if (DoesParkExist(name, connectionString))
+            {
+                
+                try
+                {
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        SqlCommand cmd = new SqlCommand("SELECT * FROM park WHERE park.name = @name", conn);
+
+                        cmd.Parameters.AddWithValue("@name", name);
+
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            p.Name = Convert.ToString(reader["name"]);
+                            p.Location = Convert.ToString(reader["location"]);
+                            p.EstablishDate = Convert.ToDateTime(reader["establish_date"]);
+                            p.Area = Convert.ToInt32(reader["area"]);
+                            p.Visitors = Convert.ToInt32(reader["visitors"]);
+                            p.Description = Convert.ToString(reader["description"]);  
+                        }  
+                    }
+                }
+                catch(SqlException ex)
+                {
+                    Console.WriteLine("There was an error", ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Please Try Again");
+                return null;
+            }
             return p;
         }
     }

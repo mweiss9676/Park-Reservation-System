@@ -13,6 +13,7 @@ namespace Capstone.Menus
     {
         static string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
         static ViewParksDAL v = new ViewParksDAL();
+        static CampgroundDAL c = new CampgroundDAL();
 
         public static void MainMenu()
         {
@@ -56,13 +57,28 @@ namespace Capstone.Menus
 
         public static void ParkInformationScreen(string park)
         {
+            Park p = v.GetParkByName(park, connectionString);
             List<string> parkInfo = v.ViewParkInformation(park, connectionString);
             PrintMenuSingleSpace(parkInfo.ToArray());
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
-            CLIHelper.GetString("Select a Command");
+            string input = CLIHelper.GetString("Select a Command");
+
+            if (input == "1")
+            {
+
+                ParkCampgroundScreen(p);
+            }
         }
+        
+        public static void ParkCampgroundScreen(Park park)
+        {
+            List<Campground> camps = c.GetCampgrounds(park, connectionString);
 
-
+            for(int i = 0; i < camps.Count; i++)
+            {
+                Console.WriteLine($"{i + 1} {camps[i].Name} {camps[i].OpenFromDate} {camps[i].OpenToDate} {camps[i].DailyFee}");
+            }
+        }
 
         private static void PrintMenuDoubleSpaced(string[] menu)
         {
