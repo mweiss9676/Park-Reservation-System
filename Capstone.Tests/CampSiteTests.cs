@@ -68,7 +68,13 @@ namespace Capstone.Tests
         [TestMethod]
         public void GetGetCampSiteAvailability_TotalCost_Test()
         {
+            List<Campsite> output = s.GetCampsitesByAvailability(connectionString, cg, fromDate, toDate);
 
+            Campsite cs = output[0];
+
+            decimal result = s.CalculateCostOfReservation(cs, fromDate, toDate, connectionString);
+
+            Assert.AreEqual(result, 140.00m);
         }
     }
 }
