@@ -84,7 +84,12 @@ namespace Capstone.Menus
         {
             Park p = viewParkDAL.GetParkByName(park, connectionString);
             List<string> parkInfo = viewParkDAL.ViewParkInformation(park, connectionString);
-            PrintMenuSingleSpace(parkInfo.ToArray());
+            Console.WriteLine($"{parkInfo[0]} National Park");
+            Console.WriteLine();
+            Console.WriteLine("{0, -20}{1, 0}", $"Location:", $"{parkInfo[1]}");
+            Console.WriteLine("{0, -20}{1, 0}", $"Established:", $"{parkInfo[2]}");
+            Console.WriteLine("{0, -20}{1, 0}", $"Area:", $"{parkInfo[3]}");
+            Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
             string input = CLIHelper.GetString("Select a Command");
 
@@ -93,6 +98,16 @@ namespace Capstone.Menus
                 Console.Clear();
                 ParkCampgroundScreen(p);
             }
+            if (input == "2")
+            {
+
+            }
+            if (input == "3")
+            {
+                Console.Clear();
+                ChooseParkMenu(viewParkDAL.ViewParks(connectionString));
+            }
+
         }
         
         public static void ParkCampgroundScreen(Park park)
@@ -112,19 +127,29 @@ namespace Capstone.Menus
 
             if (result == "1")
             {
-                string selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
-                DateTime departure = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
-                DateTime arrival = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
-
-                List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, camp[0], arrival, departure);
-                foreach (var site in sites)
-                {
-                    Console.WriteLine(site.SiteID);
-                }
+                SearchForReservation(camp[0]);
             }
             if (result == "2")
             {
                 
+            }
+        }
+
+        private static void SearchForReservation(Campground camp)
+        {
+            string selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
+            DateTime departure = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
+            DateTime arrival = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
+            Console.Clear();
+
+            Console.WriteLine(camp.Name + " Campground");
+            Console.WriteLine();
+            List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, camp, arrival, departure);
+            Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"Site No.", $"Max Occup.", $"Accessible?", $"Max RV Length", $"Utility", $"Cost");
+            Console.WriteLine();
+            foreach (var site in sites)
+            {
+                Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{site.SiteID}");
             }
         }
 
