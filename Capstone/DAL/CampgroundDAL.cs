@@ -30,6 +30,7 @@ namespace Capstone.DAL
                     {
                         Campground c = new Campground();
 
+                        c.CampgroundID = Convert.ToInt32(reader["campground_id"]);
                         c.Name = Convert.ToString(reader["name"]);
                         c.OpenFromDate = Convert.ToInt32(reader["open_from_mm"]);
                         c.OpenToDate = Convert.ToInt32(reader["open_to_mm"]);
@@ -44,6 +45,82 @@ namespace Capstone.DAL
                 Console.WriteLine(ex.Message);
             }
             return camps;
+        }
+
+        public bool IsTheCampgroundOpen(Campground camp, DateTime arrival, DateTime departure, string connectionString)
+        {
+            //if the datetime arrival and departure are within the open months then return true
+            bool isOpen = false;
+            int campgroundOpenDate = 0;
+            int campgroundCloseDate = 0;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT campground.open_from_mm, campground.open_to_mm
+                                                      FROM campground
+                                                      WHERE campground.campground_id = @campid", conn);
+                    cmd.Parameters.AddWithValue("@campid", camp.CampgroundID);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while(reader.Read())
+                    {
+                        campgroundOpenDate = Convert.ToInt32(reader["open_from_mm"]);
+                        campgroundCloseDate = Convert.ToInt32(reader["open_to_mm"]);
+                    }
+
+                    if (arrival.Month >= campgroundOpenDate && departure.Month <= campgroundCloseDate)
+                    {
+                        isOpen = true;
+                    }
+                }
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return isOpen;
+        }
+
+        public Campground GetCampgroundByName(string name, string connectionString)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM campground
+                                                      WHERE campground.campground.name = @campname", conn);
+                    cmd.Parameters.AddWithValue("@campname", name);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while(reader.Read())
+                    {
+                        Campground campground = new Campground();
+
+                        campground.CampgroundID = Convert.ToInt32(reader["campground_id"]);
+                        campground.Name = Convert.ToString(reader["name"]);
+                        campground.OpenFromDate = Convert.ToInt32(reader["open_from_mm"]);
+                        campground.OpenToDate = Convert.ToInt32(reader["open_to_mm"]);
+                        campground.DailyFee = Convert.ToDecimal(reader["daily_fee"]);
+
+                        return campground;
+                    }
+                }
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null; 
+            }
+            return null;
         }
     }
 }

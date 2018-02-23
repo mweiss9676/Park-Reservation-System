@@ -112,22 +112,22 @@ namespace Capstone.Menus
         
         public static void ParkCampgroundScreen(Park park)
         {
-            List<Campground> camps = campgroundDAL.GetCampgrounds(park, connectionString);
+            List<Campground> campgrounds = campgroundDAL.GetCampgrounds(park, connectionString);
 
             Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"", $"Name", $"Open", $"Close", $"Daily Fee");
-            for(int i = 0; i < camps.Count; i++)
+            for(int i = 0; i < campgrounds.Count; i++)
             {
-                Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"{i + 1}", $"{camps[i].Name}", $"{Months[camps[i].OpenFromDate]}", $"{Months[camps[i].OpenToDate]}", $"{camps[i].DailyFee.ToString("c")}");
+                Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"{i + 1}", $"{campgrounds[i].Name}", $"{Months[campgrounds[i].OpenFromDate]}", $"{Months[campgrounds[i].OpenToDate]}", $"{campgrounds[i].DailyFee.ToString("c")}");
             }
 
             PrintMenuDoubleSpaced(new[] {"1) Search For Available Reservation", "2) Return to Previous Screen"});
             string result = CLIHelper.GetString("Select an Option");
 
-            List<Campground> camp = campgroundDAL.GetCampgrounds(park, connectionString);
+            //List<Campground> camp = campgroundDAL.GetCampgrounds(park, connectionString);
 
             if (result == "1")
             {
-                SearchForReservation(camp[0]);
+                SearchForReservation(campgrounds);  // <-- why does this just use the 0th campground?
             }
             if (result == "2")
             {
@@ -135,16 +135,21 @@ namespace Capstone.Menus
             }
         }
 
-        private static void SearchForReservation(Campground camp)
+        private static void SearchForReservation(List<Campground> campgrounds) 
         {
+            Campsite reservationSite = new Campsite();
+
             string selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
             DateTime arrival = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
             DateTime departure = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
             Console.Clear();
 
-            Console.WriteLine(camp.Name + " Campground");
+            //right here we need to narrow down the list of campgrounds based on what the user selected
+            Campground campground = campgroundDAL.GetCampgroundByName(selectedCampground, connectionString);
+
+            Console.WriteLine(campground.Name + " Campground");
             Console.WriteLine();
-            List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, camp, arrival, departure);
+            List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, campground, arrival, departure);
             Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"Site No.", $"Max Occup.", $"Accessible?", $"Max RV Length", $"Utility", $"Cost");
             Console.WriteLine();
             foreach (var site in sites)
@@ -152,6 +157,25 @@ namespace Capstone.Menus
                 decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
                 Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost.ToString("c")}");
             }
+            int reserveSite = CLIHelper.GetInteger("What site should be reserved?(enter 0 to cancel)");
+            if (reserveSite == 0)
+            {
+                Console.Clear();
+                SearchForReservation(campgrounds);
+            }
+            else
+            {
+                //first verify that the site_id entered exists from the list provided to the user only!
+                bool exists = sites.Any(x => x.SiteID == reserveSite);
+                if (exists)
+                {
+                    reservationSite.SiteID = reserveSite;
+                    //book a reservation based on the site_id
+                }
+            }
+            string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
+            // make the reservation here
+            
         }
 
         private static void PrintMenuDoubleSpaced(string[] menu)

@@ -8,6 +8,7 @@ namespace Capstone.Models
 {
     public class Campground
     {
+        public int CampgroundID { get; set; }
         public string Name { get; set; }
         public int OpenFromDate { get; set; }
         public int OpenToDate { get; set; }
