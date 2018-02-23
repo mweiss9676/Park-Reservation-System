@@ -25,6 +25,9 @@ namespace Capstone.Tests
         static List<Campground> cg2 = c.GetCampgrounds(p2, connectionString);
         static List<Campground> cg3 = c.GetCampgrounds(p3, connectionString);
 
+        static DateTime fromDate = new DateTime(2018, 4, 24);
+        static DateTime toDate = new DateTime(2018, 4, 28);
+
         [TestMethod]
         public void GetCampGrounds_CountList_Test()
         {
@@ -67,6 +70,50 @@ namespace Capstone.Tests
             string result = cg3[0].Name;
 
             Assert.AreEqual(result, "The Unnamed Primitive Campsites");
+        }
+        [TestMethod]
+        public void GetCampGroundByName_Test()
+        {
+            Campground campground = c.GetCampgroundByName("Blackwoods", connectionString);
+            Campground campground2 = c.GetCampgroundByName("Juniper Group Site", connectionString);
+            Campground campground3 = c.GetCampgroundByName("The Unnamed Primitive Campsites", connectionString);
+
+            // asserting first campground
+            Assert.AreEqual(campground.CampgroundID, 1);
+            Assert.AreEqual(campground.DailyFee, 35m);
+            Assert.AreEqual(campground.OpenFromDate, 1);
+            Assert.AreEqual(campground.OpenToDate, 12);
+
+            // asserting campground2
+            Assert.AreEqual(campground2.CampgroundID, 6);
+            Assert.AreEqual(campground2.DailyFee, 250m);
+            Assert.AreEqual(campground2.OpenFromDate, 1);
+            Assert.AreEqual(campground2.OpenToDate, 12);
+
+            // asserting campground3
+            Assert.AreEqual(campground3.CampgroundID, 7);
+            Assert.AreEqual(campground3.DailyFee, 20m);
+            Assert.AreEqual(campground3.OpenFromDate, 5);
+            Assert.AreEqual(campground3.OpenToDate, 11);
+        }
+        
+        [TestMethod]
+        public void IsCampGroundOpen_Tests()
+        {
+            Campground campground = c.GetCampgroundByName("Blackwoods", connectionString);
+            Campground campground2 = c.GetCampgroundByName("Schoodic Woods", connectionString);
+            Campground campground3 = c.GetCampgroundByName("Seawall", connectionString);
+            Campground campground4 = c.GetCampgroundByName("Canyon Wren Group Site", connectionString);
+
+            bool result = c.IsTheCampgroundOpen(campground, fromDate, toDate, connectionString);
+            bool result2 = c.IsTheCampgroundOpen(campground2, fromDate, toDate, connectionString);
+            bool result3 = c.IsTheCampgroundOpen(campground3, fromDate, toDate, connectionString);
+            bool result4 = c.IsTheCampgroundOpen(campground4, fromDate, toDate, connectionString);
+
+            Assert.AreEqual(result, true);
+            Assert.AreEqual(result2, false);
+            Assert.AreEqual(result3, false);
+            Assert.AreEqual(result4, true);
         }
     }
 }
