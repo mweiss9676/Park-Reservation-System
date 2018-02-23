@@ -92,8 +92,7 @@ namespace Capstone.DAL
                     SqlCommand cmd = new SqlCommand(@"SELECT site.* FROM site
                                                     LEFT JOIN reservation ON site.site_id = reservation.site_id 
                                                     JOIN campground ON campground.campground_id = site.campground_id 
-                                                    WHERE (((@fromdate <= reservation.from_date) OR (@todate >= reservation.to_date)) 
-                                                    OR reservation.reservation_id IS NULL) 
+                                                    WHERE ((@fromdate <= reservation.from_date) OR (@todate >= reservation.to_date))  
                                                     AND campground.name = @campName", conn2);
                     cmd.Parameters.AddWithValue("@campName", campName);
                     cmd.Parameters.AddWithValue("@fromdate", desiredArrival);
@@ -105,7 +104,6 @@ namespace Capstone.DAL
                         Campsite cs = new Campsite();
 
                         cs.SiteID = Convert.ToInt32(reader2["site_id"]);
-                        //cs.SiteNumber = Convert.ToInt32(reader2["site_number"]);
                         cs.MaxOccupancy = Convert.ToInt32(reader2["max_occupancy"]);
                         cs.Accessible = Convert.ToBoolean(reader2["accessible"]);
                         cs.Utilities = Convert.ToBoolean(reader2["utilities"]);
