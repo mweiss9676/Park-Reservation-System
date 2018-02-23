@@ -74,7 +74,7 @@ namespace Capstone.Tests
 
             decimal result = s.CalculateCostOfReservation(cs, fromDate, toDate, connectionString);
 
-            Assert.AreEqual(result, 140.00m);
+            Assert.AreEqual(result, 140.00);
         }
     }
 }
