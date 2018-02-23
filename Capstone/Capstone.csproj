@@ -45,12 +45,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\CampgroundDAL.cs" />
+    <Compile Include="DAL\CampsiteDAL.cs" />
+    <Compile Include="Models\Campsite.cs" />
     <Compile Include="Exceptions\ParkExceptions.cs" />
     <Compile Include="Menus\CLI.cs" />
     <Compile Include="Menus\CLIHelper.cs" />
     <Compile Include="DAL\ViewParksDAL.cs" />
     <Compile Include="Models\Campground.cs" />
     <Compile Include="Models\Park.cs" />
+    <Compile Include="Models\Reservation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
