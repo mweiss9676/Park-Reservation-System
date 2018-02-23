@@ -102,7 +102,8 @@ namespace Capstone.Menus
             }
             if (input == "2")
             {
-
+                Console.Clear();
+                SearchForReservationByName();
             }
             if (input == "3")
             {
@@ -225,6 +226,16 @@ namespace Capstone.Menus
             campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
 
             Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");                       
+        }
+
+        public static void SearchForReservationByName()
+        {
+            string name = CLIHelper.GetString("What name should I search?");
+            Reservation reservation = new Reservation();
+            if (campsiteDAL.FindReservationByName(name, connectionString) != null)
+            {
+                Console.WriteLine("Thank you! We found your");
+            }
         }
 
 

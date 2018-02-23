@@ -14,6 +14,5 @@ namespace Capstone.Models
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public DateTime FoundedDate { get; set; }
-
     }
 }
