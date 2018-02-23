@@ -121,5 +121,49 @@ namespace Capstone.DAL
             }
             return campsites;
         }
+
+        public decimal CalculateCostOfReservation(Campsite site, DateTime arrival, DateTime departure, string connectionString)
+        {
+
+            //return the rate based on the site chosen (the math from the dates will be done back in the cli? <--it would be better to do it here
+            decimal dailyFee = 0.0M;
+            decimal finalFee = 0.0M;            
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+
+                    /*SELECT site.site_id, campground.daily_fee, reservation.from_date, reservation.to_date FROM campground
+                      JOIN site ON campground.campground_id = site.campground_id
+                      JOIN reservation ON site.site_id = reservation.site_id
+                      WHERE site.site_id = 1;
+                     */
+                    SqlCommand cmd = new SqlCommand(@"SELECT campground.daily_fee  
+                                                      FROM campground
+                                                      JOIN site ON campground.campground_id = site.campground_id
+                                                      JOIN reservation ON site.site_id = reservation.site_id
+                                                      WHERE site.site_id = @siteid", conn);
+                    cmd.Parameters.AddWithValue("@siteid", site.SiteID);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    TimeSpan difference = departure - arrival;
+
+                    while(reader.Read())
+                    {
+
+                    }
+                }
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return finalFee;
+        }
     }
 }
