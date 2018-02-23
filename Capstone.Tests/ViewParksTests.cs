@@ -12,15 +12,16 @@ namespace Capstone.Tests
     [TestClass]
     public class ViewParksTests
     {
+        static ViewParksDAL v = new ViewParksDAL();
 
         static string connectionString = @"Server=.\SQLEXPRESS;Database=NationalParks;Trusted_Connection=True";
 
         [TestMethod]
         public void DoesParkExist_Test()
         {
-            bool result = ViewParksDAL.DoesParkExist("Acadia", connectionString);
-            bool result1 = ViewParksDAL.DoesParkExist("Arches", connectionString);
-            bool result2 = ViewParksDAL.DoesParkExist("Dingle Berry", connectionString);
+            bool result = v.DoesParkExist("Acadia", connectionString);
+            bool result1 = v.DoesParkExist("Arches", connectionString);
+            bool result2 = v.DoesParkExist("Dingle Berry", connectionString);
 
             Assert.AreEqual(true, result);
             Assert.AreEqual(true, result1);
@@ -30,8 +31,6 @@ namespace Capstone.Tests
         [TestMethod]
         public void GetParkByName_Test()
         {
-            ViewParksDAL v = new ViewParksDAL();
-
             Park p = v.GetParkByName("Acadia", connectionString);
             Park a = v.GetParkByName("Arches", connectionString);
 

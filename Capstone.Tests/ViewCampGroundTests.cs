@@ -24,7 +24,7 @@ namespace Capstone.Tests
             Park p2 = v.GetParkByName("Arches", connectionString);
             Park p3 = v.GetParkByName("Cuyahoga Valley", connectionString);
 
-            List<Campground>cg = c.GetCampgrounds(p, connectionString);
+            List<Campground> cg = c.GetCampgrounds(p, connectionString);
             List<Campground> cg2 = c.GetCampgrounds(p2, connectionString);
             List<Campground> cg3 = c.GetCampgrounds(p3, connectionString);
 
