@@ -10,7 +10,7 @@ using Capstone.Models;
 namespace Capstone.Tests
 {
     [TestClass]
-    public class ViewParksTests
+    public class ParksTests
     {
         static ViewParksDAL v = new ViewParksDAL();
 
