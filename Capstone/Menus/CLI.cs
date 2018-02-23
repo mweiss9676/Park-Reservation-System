@@ -109,7 +109,7 @@ namespace Capstone.Menus
             if (input == "2")
             {
                 Console.Clear();
-                SearchForReservationByName();
+                SearchForReservationByID();
             }
             if (input == "3")
             {
@@ -234,7 +234,7 @@ namespace Capstone.Menus
             Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");                       
         }
 
-        public static void SearchForReservationByName()
+        public static void SearchForReservationByID()
         {
             int reservationID = CLIHelper.GetInteger("What is your reservation id?");
 
@@ -247,8 +247,9 @@ namespace Capstone.Menus
             {
                 Console.Clear();
                 Console.WriteLine($"{reservationID} is not a valid choice, please select from one of the below options: ");
-                SearchForReservationByName();
+                SearchForReservationByID();
             }
+            Console.ReadLine();
         }
 
         private static void PrintReservationInformation(Reservation reservation)
