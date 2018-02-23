@@ -69,6 +69,7 @@ namespace Capstone.Menus
             PrintMenuDoubleSpaced(menu.ToArray());
             string result = CLIHelper.GetString("Select A Park For Further Details");
             Console.Clear();
+
             ParkInformationScreen(result);
         }
 
@@ -102,15 +103,21 @@ namespace Capstone.Menus
 
             List<Campground> camp = campgroundDAL.GetCampgrounds(park, connectionString);
 
-            DateTime dt = new DateTime(2018, 01, 01);
-            DateTime dt2 = new DateTime(2018, 05, 01);
             if (result == "1")
             {
-                List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, camp[0], dt, dt2);
+                string selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
+                DateTime departure = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
+                DateTime arrival = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
+
+                List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, camp[0], arrival, departure);
                 foreach (var site in sites)
                 {
                     Console.WriteLine(site.SiteID);
                 }
+            }
+            if (result == "2")
+            {
+                
             }
         }
 
