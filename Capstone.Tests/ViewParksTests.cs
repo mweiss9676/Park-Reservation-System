@@ -30,8 +30,10 @@ namespace Capstone.Tests
         [TestMethod]
         public void GetParkByName_Test()
         {
-            Park p = ViewParksDAL.GetParkByName("Acadia", connectionString);
-            Park a = ViewParksDAL.GetParkByName("Arches", connectionString);
+            ViewParksDAL v = new ViewParksDAL();
+
+            Park p = v.GetParkByName("Acadia", connectionString);
+            Park a = v.GetParkByName("Arches", connectionString);
 
             Assert.AreEqual("Acadia", p.Name);
             Assert.AreEqual(76518, a.Area);
