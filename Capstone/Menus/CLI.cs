@@ -138,8 +138,8 @@ namespace Capstone.Menus
         private static void SearchForReservation(Campground camp)
         {
             string selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
-            DateTime departure = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
-            DateTime arrival = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
+            DateTime arrival = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
+            DateTime departure = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
             Console.Clear();
 
             Console.WriteLine(camp.Name + " Campground");
@@ -150,7 +150,7 @@ namespace Capstone.Menus
             foreach (var site in sites)
             {
                 decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
-                Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost}");
+                Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost.ToString("c")}");
             }
         }
 

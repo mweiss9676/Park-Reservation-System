@@ -92,7 +92,7 @@ namespace Capstone.DAL
                     SqlCommand cmd = new SqlCommand(@"SELECT site.* FROM site
                                                     LEFT JOIN reservation ON site.site_id = reservation.site_id 
                                                     JOIN campground ON campground.campground_id = site.campground_id 
-                                                    WHERE ((@fromdate <= reservation.from_date) OR (@todate >= reservation.to_date))  
+                                                    WHERE ((@todate <= reservation.from_date) OR (@fromdate >= reservation.to_date))  
                                                     AND campground.name = @campName", conn2);
                     cmd.Parameters.AddWithValue("@campName", campName);
                     cmd.Parameters.AddWithValue("@fromdate", desiredArrival);
@@ -142,7 +142,7 @@ namespace Capstone.DAL
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    TimeSpan difference = arrival - departure;
+                    TimeSpan difference = departure - arrival;
 
                     while(reader.Read())
                     {
