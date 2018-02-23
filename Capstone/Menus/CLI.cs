@@ -98,6 +98,8 @@ namespace Capstone.Menus
             Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
             Console.WriteLine();
             Console.WriteLine($"{parkInfo[5]}");
+            Console.WriteLine();
+            Console.WriteLine();
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
             string input = CLIHelper.GetString("Select a Command");
 
@@ -129,10 +131,11 @@ namespace Capstone.Menus
         {
             List<Campground> campgrounds = campgroundDAL.GetCampgrounds(park, connectionString);
 
-            Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"", $"Name", $"Open", $"Close", $"Daily Fee");
+            Console.WriteLine("{0, -20}{1, -20}{2, -20}{3, -20}", $"Name", $"Open", $"Close", $"Daily Fee");
+            Console.WriteLine();
             for (int i = 0; i < campgrounds.Count; i++)
             {
-                Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"{i + 1}", $"{campgrounds[i].Name}", $"{Months[campgrounds[i].OpenFromDate]}", $"{Months[campgrounds[i].OpenToDate]}", $"{campgrounds[i].DailyFee.ToString("c")}");
+                Console.WriteLine("{0, -20}{1, -20}{2, -20}{3, -20}",  $"{campgrounds[i].Name}", $"{Months[campgrounds[i].OpenFromDate]}", $"{Months[campgrounds[i].OpenToDate]}", $"{campgrounds[i].DailyFee.ToString("c")}");
             }
 
             PrintMenuDoubleSpaced(new[] { "1) Search For Available Reservation", "2) Return to Previous Screen" });
@@ -236,23 +239,26 @@ namespace Capstone.Menus
 
         public static void SearchForReservationByID()
         {
-            int reservationID = CLIHelper.GetInteger("What is your reservation id?");
-            string customerName = CLIHelper.GetString("What is your name?");
-            Console.WriteLine();
-
-            if (campsiteDAL.FindReservationByID(reservationID, customerName, connectionString) != null)
+            while (true)
             {
-                Console.WriteLine("Thank you! We found your reservation: ");
+                int reservationID = CLIHelper.GetInteger("What is your reservation id?");
+                string customerName = CLIHelper.GetString("What is your name?");
                 Console.WriteLine();
-                PrintReservationInformation(campsiteDAL.FindReservationByID(reservationID, customerName, connectionString));
+
+                if (campsiteDAL.FindReservationByID(reservationID, customerName, connectionString) != null)
+                {
+                    Console.WriteLine("Thank you! We found your reservation: ");
+                    Console.WriteLine();
+                    PrintReservationInformation(campsiteDAL.FindReservationByID(reservationID, customerName, connectionString));
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{customerName} with a reservation id of {reservationID} is not in our system, please re-enter your information: ");
+                    SearchForReservationByID();
+                }
+                //Console.ReadLine();
             }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine($"{customerName} with a reservation id of {reservationID} is not in our system, please re-enter your information: ");
-                SearchForReservationByID();
-            }
-            Console.ReadLine();
         }
 
         private static void PrintReservationInformation(Reservation reservation)
@@ -260,6 +266,24 @@ namespace Capstone.Menus
             Console.WriteLine($"We have you staying from {reservation.FromDate} through {reservation.ToDate}.");
             Console.WriteLine($"Your stay is under the name {reservation.Name} at site: {reservation.SiteID}");
             Console.WriteLine("Enjoy your stay!");
+            PrintMenuDoubleSpaced(new[] { "1) Return to the Main Menu", "2) Quit" });
+            string option = CLIHelper.GetString("");
+            if (option == "1")
+            {
+                Console.Clear();
+                MainMenu();
+            }
+            if (option == "2")
+            {
+                Console.Clear();
+                Environment.Exit(0);
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("That is not a valid option, please select from the choices below...");
+                PrintReservationInformation(reservation);
+            }
         }
 
 
