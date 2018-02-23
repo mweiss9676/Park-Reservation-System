@@ -158,5 +158,29 @@ namespace Capstone.DAL
 
             return finalFee;
         }
+
+        public void CreateReservation(int siteID, DateTime arrival, DateTime departure, string name, string connectionString)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"INSERT INTO reservation(site_id, name, from_date, to_date)
+                                                      VALUES(@siteid, @name, @arrival, @departure)", conn);
+                    cmd.Parameters.AddWithValue("@siteid", siteID);
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@arrival", arrival);
+                    cmd.Parameters.AddWithValue("@departure", departure);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }

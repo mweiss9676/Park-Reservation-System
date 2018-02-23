@@ -146,12 +146,19 @@ namespace Capstone.Menus
 
             //right here we need to narrow down the list of campgrounds based on what the user selected
             Campground campground = campgroundDAL.GetCampgroundByName(selectedCampground, connectionString);
+            if (!campgroundDAL.IsTheCampgroundOpen(campground, arrival, departure, connectionString))
+            {
+                Console.Clear();
+                Console.WriteLine($"{campground.Name} campground is only open from {Months[campground.OpenFromDate]} to {Months[campground.OpenToDate]}, please choose another date range:");
+                SearchForReservation(campgrounds);
+            }
 
             Console.WriteLine(campground.Name + " Campground");
             Console.WriteLine();
             List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, campground, arrival, departure);
             Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"Site No.", $"Max Occup.", $"Accessible?", $"Max RV Length", $"Utility", $"Cost");
             Console.WriteLine();
+
             foreach (var site in sites)
             {
                 decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
@@ -175,6 +182,8 @@ namespace Capstone.Menus
             }
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
             // make the reservation here
+
+
             
         }
 

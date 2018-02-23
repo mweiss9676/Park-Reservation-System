@@ -95,8 +95,8 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM campground
-                                                      WHERE campground.campground.name = @campname", conn);
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM campground 
+                                                      WHERE campground.name = @campname", conn);
                     cmd.Parameters.AddWithValue("@campname", name);
 
                     SqlDataReader reader = cmd.ExecuteReader();
