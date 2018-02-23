@@ -50,7 +50,7 @@ namespace Capstone.DAL
         public bool IsTheCampgroundOpen(Campground camp, DateTime arrival, DateTime departure, string connectionString)
         {
             //if the datetime arrival and departure are within the open months then return true
-            bool isOpen = false;
+            bool isOpen = true;
             int campgroundOpenDate = 0;
             int campgroundCloseDate = 0;
 
@@ -73,10 +73,28 @@ namespace Capstone.DAL
                         campgroundCloseDate = Convert.ToInt32(reader["open_to_mm"]);
                     }
 
-                    if (arrival.Month >= campgroundOpenDate && departure.Month <= campgroundCloseDate)
+                    for (int i = 1; i < campgroundOpenDate; i++)
                     {
-                        isOpen = true;
+                        for (var day = arrival.Date; day.Date <= departure.Date; day = day.AddDays(1))
+                        {
+                            if (day.Month == i)
+                            {
+                                isOpen = false;
+                            }
+                        }
                     }
+                    for (int i = campgroundCloseDate; i < 12; i++)
+                    {
+                        for (var day = arrival.Date; day.Date <= departure.Date; day = day.AddDays(1))
+                        {
+                            if (day.Month == i)
+                            {
+                                isOpen = false;
+                            }
+                        }
+                    }
+
+
                 }
             }
             catch(SqlException ex)

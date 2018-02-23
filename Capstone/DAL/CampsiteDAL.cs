@@ -213,5 +213,43 @@ namespace Capstone.DAL
 
             return reservationID;
         }
+
+        public Reservation FindReservationByName(string name, string connectionString)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT reservation_id 
+                                                      FROM reservation
+                                                      WHERE reservation.name = @name"
+                                                      , conn);
+                    cmd.Parameters.AddWithValue("@name", name);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Reservation r = new Reservation();
+
+                        r.Name = Convert.ToString(reader["name"]);
+                        r.SiteID = Convert.ToInt32(reader["site_id"]);
+                        r.ReservationID = Convert.ToInt32(reader["reservation_id"]);
+                        r.FromDate = Convert.ToDateTime(reader["from_date"]);
+                        r.ToDate = Convert.ToDateTime(reader["to_date"]);
+                        r.FoundedDate = Convert.ToDateTime(reader["create_date"]);
+
+                        return r;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
     }
 }

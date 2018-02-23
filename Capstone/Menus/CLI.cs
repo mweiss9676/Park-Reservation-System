@@ -46,7 +46,6 @@ namespace Capstone.Menus
                 {
                     Console.Clear();
                     Console.WriteLine("Viewing All Parks...");
-                    Console.WriteLine();
 
                     List<Park> parks = viewParkDAL.ViewParks(connectionString);
 
@@ -74,7 +73,7 @@ namespace Capstone.Menus
             bool parkExists = viewParkDAL.DoesParkExist(result, connectionString);
             while(!parkExists)
             {
-                Console.WriteLine("That is not a valid option, please enter one of the choices below");
+                Console.WriteLine("That is not a valid option, please enter one of the choices below...");
                 ChooseParkMenu(parks);
             }
 
@@ -91,7 +90,8 @@ namespace Capstone.Menus
             Console.WriteLine("{0, -20}{1, 0}", $"Established:", $"{parkInfo[2]}");
             Console.WriteLine("{0, -20}{1, 0}", $"Area:", $"{parkInfo[3]}");
             Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
-            Console.WriteLine("");
+            Console.WriteLine();
+            Console.WriteLine($"{parkInfo[5]}");
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
             string input = CLIHelper.GetString("Select a Command");
 
@@ -109,50 +109,81 @@ namespace Capstone.Menus
                 Console.Clear();
                 ChooseParkMenu(viewParkDAL.ViewParks(connectionString));
             }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("That is not a valid choice, please select from one of the below options: ");
+                ParkInformationScreen(park);
+            }
 
         }
-        
+
         public static void ParkCampgroundScreen(Park park)
         {
             List<Campground> campgrounds = campgroundDAL.GetCampgrounds(park, connectionString);
 
             Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"", $"Name", $"Open", $"Close", $"Daily Fee");
-            for(int i = 0; i < campgrounds.Count; i++)
+            for (int i = 0; i < campgrounds.Count; i++)
             {
                 Console.WriteLine("{0, -5}{1, -20}{2, -20}{3, -20}{4, -20}", $"{i + 1}", $"{campgrounds[i].Name}", $"{Months[campgrounds[i].OpenFromDate]}", $"{Months[campgrounds[i].OpenToDate]}", $"{campgrounds[i].DailyFee.ToString("c")}");
             }
 
-            PrintMenuDoubleSpaced(new[] {"1) Search For Available Reservation", "2) Return to Previous Screen"});
+            PrintMenuDoubleSpaced(new[] { "1) Search For Available Reservation", "2) Return to Previous Screen" });
             string result = CLIHelper.GetString("Select an Option");
 
-            //List<Campground> camp = campgroundDAL.GetCampgrounds(park, connectionString);
-
+            if(campgrounds.Any(x => x.Name == result))
+            {
+                MakeNewReservation(campgrounds, name: result);
+            }
             if (result == "1")
             {
-                SearchForReservation(campgrounds);  // <-- why does this just use the 0th campground?
+                MakeNewReservation(campgrounds);  // <-- why does this just use the 0th campground?
             }
             if (result == "2")
             {
-                
+                Console.Clear();
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("That is not a valid option, please select from the choices below...");
+                ParkCampgroundScreen(park);
             }
         }
 
-        private static void SearchForReservation(List<Campground> campgrounds) 
+        private static void MakeNewReservation(List<Campground> campgrounds, string name = "") 
         {
             Campsite reservationSite = new Campsite();
 
-            string selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
+            string selectedCampground = name;
+
+            if (selectedCampground == "")
+            {
+                selectedCampground = CLIHelper.GetString("Which campground (i.e. 'Blackwoods)");
+            }
+
             DateTime arrival = CLIHelper.GetDateTime("What is the arrival date? (Month/Day/Year)");
             DateTime departure = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
             Console.Clear();
 
             //right here we need to narrow down the list of campgrounds based on what the user selected
             Campground campground = campgroundDAL.GetCampgroundByName(selectedCampground, connectionString);
+
+            if (arrival == departure)
+            {
+                Console.WriteLine("You have selected the same arrival and departure day, minimum stay is 1 day...");
+                MakeNewReservation(campgrounds, selectedCampground);
+            }
+            if (departure < arrival)
+            {
+                Console.WriteLine("You have selected a departure date that is earlier than your arrival date, have you made a mistake...?");
+                MakeNewReservation(campgrounds, selectedCampground);
+            }
             if (!campgroundDAL.IsTheCampgroundOpen(campground, arrival, departure, connectionString))
             {
                 Console.Clear();
                 Console.WriteLine($"{campground.Name} campground is only open from {Months[campground.OpenFromDate]} to {Months[campground.OpenToDate]}, please choose another date range:");
-                SearchForReservation(campgrounds);
+                MakeNewReservation(campgrounds);
             }
 
             Console.WriteLine(campground.Name + " Campground");
@@ -166,11 +197,13 @@ namespace Capstone.Menus
                 decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
                 Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost.ToString("c")}");
             }
+            Console.WriteLine();
+
             int reserveSite = CLIHelper.GetInteger("What site should be reserved?(enter 0 to cancel)");
             if (reserveSite == 0)
             {
                 Console.Clear();
-                SearchForReservation(campgrounds);
+                MakeNewReservation(campgrounds, selectedCampground);
             }
             else
             {
@@ -181,6 +214,11 @@ namespace Capstone.Menus
                     reservationSite.SiteID = reserveSite;
                     //book a reservation based on the site_id
                 }
+                else
+                {
+                    Console.WriteLine("That is not a valid option, please select from the choices above...");
+                    MakeNewReservation(campgrounds, selectedCampground);
+                }
             }
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
             // make the reservation here
@@ -188,6 +226,7 @@ namespace Capstone.Menus
 
             Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");                       
         }
+
 
         private static void PrintMenuDoubleSpaced(string[] menu)
         {
