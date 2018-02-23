@@ -237,10 +237,12 @@ namespace Capstone.Menus
         public static void SearchForReservationByID()
         {
             int reservationID = CLIHelper.GetInteger("What is your reservation id?");
+            Console.WriteLine();
 
             if (campsiteDAL.FindReservationByID(reservationID, connectionString) != null)
             {
                 Console.WriteLine("Thank you! We found your reservation: ");
+                Console.WriteLine();
                 PrintReservationInformation(campsiteDAL.FindReservationByID(reservationID, connectionString));
             }
             else

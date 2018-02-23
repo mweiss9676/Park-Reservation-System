@@ -214,7 +214,7 @@ namespace Capstone.DAL
             return reservationID;
         }
 
-        public Reservation FindReservationByID(int reservationID, string connectionString)
+        public Reservation FindReservationByID(int reservationID, string name, string connectionString)
         {
             try
             {
@@ -224,9 +224,11 @@ namespace Capstone.DAL
 
                     SqlCommand cmd = new SqlCommand(@"SELECT *
                                                       FROM reservation
-                                                      WHERE reservation.reservation_id = @id"
+                                                      WHERE reservation.reservation_id = @id
+                                                      AND reservation.name = @name"
                                                       , conn);
                     cmd.Parameters.AddWithValue("@id", reservationID);
+                    cmd.Parameters.AddWithValue("@name", name);
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
