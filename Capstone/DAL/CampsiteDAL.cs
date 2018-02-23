@@ -144,11 +144,11 @@ namespace Capstone.DAL
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    TimeSpan difference = departure - arrival;
+                    TimeSpan difference = arrival - departure;
 
                     while(reader.Read())
                     {
-                        dailyFee = Convert.ToDecimal(reader["campground.daily_fee"]);
+                        dailyFee = Convert.ToDecimal(reader["daily_fee"]);
                         finalFee = (decimal)difference.TotalDays * dailyFee;
                     }
                 }

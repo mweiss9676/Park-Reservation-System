@@ -149,7 +149,8 @@ namespace Capstone.Menus
             Console.WriteLine();
             foreach (var site in sites)
             {
-                Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{site.SiteID}");
+                decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
+                Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost}");
             }
         }
 
