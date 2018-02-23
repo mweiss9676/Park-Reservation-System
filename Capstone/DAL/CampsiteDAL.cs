@@ -135,12 +135,6 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-
-                    /*SELECT site.site_id, campground.daily_fee, reservation.from_date, reservation.to_date FROM campground
-                      JOIN site ON campground.campground_id = site.campground_id
-                      JOIN reservation ON site.site_id = reservation.site_id
-                      WHERE site.site_id = 1;
-                     */
                     SqlCommand cmd = new SqlCommand(@"SELECT campground.daily_fee  
                                                       FROM campground
                                                       JOIN site ON campground.campground_id = site.campground_id
@@ -154,7 +148,8 @@ namespace Capstone.DAL
 
                     while(reader.Read())
                     {
-
+                        dailyFee = Convert.ToDecimal(reader["campground.daily_fee"]);
+                        finalFee = (decimal)difference.TotalDays * dailyFee;
                     }
                 }
             }
