@@ -37,12 +37,12 @@ namespace Capstone.Menus
             while (true)
             {
                 Console.WriteLine("Welcome To The Park Reservation System!!");
-                string[] menu = {"1) View Parks", "Q) Quit" };
+                string[] menu = { "1) View Parks", "2) Quit" };
                 PrintMenuDoubleSpaced(menu);
 
                 string input = Console.ReadLine();
 
-                if (input == "1")
+                if (input == "1" || input.ToLower() == "view parks" || input.ToLower() == "view")
                 {
                     Console.Clear();
                     Console.WriteLine("Viewing All Parks...");
@@ -51,10 +51,16 @@ namespace Capstone.Menus
 
                     ChooseParkMenu(parks);
                 }
-                if (input.ToLower() == "q")
+                if (input.ToLower() == "q" || input.ToLower() == "quit" || input.ToLower() == "2")
                 {
                     Console.Clear();
                     Environment.Exit(0);
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("That is not a valid option, please select from one of the following choices: ");
+                    MainMenu();
                 }
             }
         }
@@ -230,12 +236,26 @@ namespace Capstone.Menus
 
         public static void SearchForReservationByName()
         {
-            string name = CLIHelper.GetString("What name should I search?");
-            Reservation reservation = new Reservation();
-            if (campsiteDAL.FindReservationByName(name, connectionString) != null)
+            int reservationID = CLIHelper.GetInteger("What is your reservation id?");
+
+            if (campsiteDAL.FindReservationByID(reservationID, connectionString) != null)
             {
-                Console.WriteLine("Thank you! We found your");
+                Console.WriteLine("Thank you! We found your reservation: ");
+                PrintReservationInformation(campsiteDAL.FindReservationByID(reservationID, connectionString));
             }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine($"{reservationID} is not a valid choice, please select from one of the below options: ");
+                SearchForReservationByName();
+            }
+        }
+
+        private static void PrintReservationInformation(Reservation reservation)
+        {
+            Console.WriteLine($"We have you staying from {reservation.FromDate} through {reservation.ToDate}.");
+            Console.WriteLine($"Your stay is under the name {reservation.Name} at site: {reservation.SiteID}");
+            Console.WriteLine("Enjoy your stay!");
         }
 
 

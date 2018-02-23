@@ -222,7 +222,7 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT reservation_id 
+                    SqlCommand cmd = new SqlCommand(@"SELECT *
                                                       FROM reservation
                                                       WHERE reservation.reservation_id = @id"
                                                       , conn);
