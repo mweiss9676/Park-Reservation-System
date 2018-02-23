@@ -70,6 +70,13 @@ namespace Capstone.Menus
             string result = CLIHelper.GetString("Select A Park For Further Details");
             Console.Clear();
 
+            bool parkExists = viewParkDAL.DoesParkExist(result, connectionString);
+            while(!parkExists)
+            {
+                Console.WriteLine("That is not a valid option, please enter one of the choices below");
+                ChooseParkMenu(parks);
+            }
+
             ParkInformationScreen(result);
         }
 

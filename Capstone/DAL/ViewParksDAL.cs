@@ -80,7 +80,7 @@ namespace Capstone.DAL
             return parkInfo;
         }
 
-        public static bool DoesParkExist(string name, string connectionString)
+        public bool DoesParkExist(string name, string connectionString)
         {
             bool doesExist = false;
 
