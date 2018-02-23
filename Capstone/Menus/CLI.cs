@@ -36,7 +36,8 @@ namespace Capstone.Menus
         {
             while (true)
             {
-                string[] menu = { "Main Menu", "1) View Parks", "Q) Quit" };
+                Console.WriteLine("Welcome To The Park Reservation System!!");
+                string[] menu = {"1) View Parks", "Q) Quit" };
                 PrintMenuDoubleSpaced(menu);
 
                 string input = Console.ReadLine();
@@ -90,6 +91,7 @@ namespace Capstone.Menus
             Console.WriteLine("{0, -20}{1, 0}", $"Established:", $"{parkInfo[2]}");
             Console.WriteLine("{0, -20}{1, 0}", $"Area:", $"{parkInfo[3]}");
             Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
+            Console.WriteLine("");
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
             string input = CLIHelper.GetString("Select a Command");
 
@@ -184,11 +186,7 @@ namespace Capstone.Menus
             // make the reservation here
             campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
 
-            Console.WriteLine($"The reservation has been created and the confirmation id is {}");
-
-
-
-            
+            Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");                       
         }
 
         private static void PrintMenuDoubleSpaced(string[] menu)
