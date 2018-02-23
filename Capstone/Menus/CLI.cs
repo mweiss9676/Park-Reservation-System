@@ -182,6 +182,10 @@ namespace Capstone.Menus
             }
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
             // make the reservation here
+            campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
+
+            Console.WriteLine($"The reservation has been created and the confirmation id is {}");
+
 
 
             

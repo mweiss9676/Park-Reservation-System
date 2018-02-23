@@ -182,5 +182,36 @@ namespace Capstone.DAL
                 Console.WriteLine(ex.Message);
             }
         }
+        public int GetReservationID(int siteID, string connectionString)
+        {
+            int reservationID = 0;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT reservation_id 
+                                                      FROM reservation
+                                                      JOIN site ON site.site_id = reservation.site_id
+                                                      WHERE site.site_id = @siteid", conn);
+                    cmd.Parameters.AddWithValue("@siteid", siteID);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    
+                    while (reader.Read())
+                    {
+                        reservationID = Convert.ToInt32(reader["reservation_id"]);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return reservationID;
+        }
     }
 }
