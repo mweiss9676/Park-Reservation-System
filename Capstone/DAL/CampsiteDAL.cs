@@ -106,6 +106,7 @@ namespace Capstone.DAL
                         Campsite cs = new Campsite();
 
                         cs.SiteID = Convert.ToInt32(reader2["site_id"]);
+                        cs.SiteNumber = Convert.ToInt32(reader2["site_number"]);
                         cs.MaxOccupancy = Convert.ToInt32(reader2["max_occupancy"]);
                         cs.Accessible = Convert.ToBoolean(reader2["accessible"]);
                         cs.Utilities = Convert.ToBoolean(reader2["utilities"]);
@@ -138,18 +139,18 @@ namespace Capstone.DAL
                     SqlCommand cmd = new SqlCommand(@"SELECT campground.daily_fee  
                                                       FROM campground
                                                       JOIN site ON campground.campground_id = site.campground_id
-                                                      JOIN reservation ON site.site_id = reservation.site_id
-                                                      WHERE site.site_id = @siteid", conn);
-                    cmd.Parameters.AddWithValue("@siteid", site.SiteID);
+                                                      WHERE site.site_id = @siteID", conn);
+                    cmd.Parameters.AddWithValue("@siteID", site.SiteID);
 
-                    SqlDataReader reader = cmd.ExecuteReader();
 
                     TimeSpan difference = departure - arrival;
+
+                    SqlDataReader reader = cmd.ExecuteReader();
 
                     while(reader.Read())
                     {
                         dailyFee = Convert.ToDecimal(reader["daily_fee"]);
-                        finalFee = (decimal)difference.TotalDays * dailyFee;
+                        finalFee = (int)difference.TotalDays * dailyFee;
                     }
                 }
             }
