@@ -55,7 +55,6 @@ namespace Capstone.Menus
                 if (input == "1" || input.ToLower() == "view parks" || input.ToLower() == "view")
                 {
                     Console.Clear();
-                    Console.WriteLine("Viewing All Parks...");
 
                     List<Park> parks = viewParkDAL.ViewParks(connectionString);
 
@@ -77,29 +76,52 @@ namespace Capstone.Menus
 
         public static void ChooseParkMenu(List<Park> parks)
         {
+            Console.WriteLine("Viewing All Parks...");
             List<string> menu = new List<string>();
             for (int i = 1; i <= parks.Count; i++)
             {
                 menu.Add(i + ") " + parks[i - 1].Name);
             }
             PrintMenuDoubleSpaced(menu.ToArray());
-            string result = CLIHelper.GetString("Select A Park For Further Details");
+
+            Console.WriteLine("Please Select a Park for More Information");
+
+            string userParkName = Console.ReadLine();
+
             Console.Clear();
+            
+            bool parkExists = viewParkDAL.DoesParkExist(userParkName, connectionString);
 
-            bool parkExists = viewParkDAL.DoesParkExist(result, connectionString);
-            while(!parkExists)
+            if (parkExists)
             {
-                Console.WriteLine("That is not a valid option, please enter one of the choices below...");
-                ChooseParkMenu(parks);
+                ParkInformationScreen(userParkName);
             }
-
-            ParkInformationScreen(result);
+            if (userParkName == "1")
+            {
+                ParkInformationScreen("acadia");
+            }
+            if (userParkName == "2")
+            {
+                ParkInformationScreen("arches");
+            }
+            if (userParkName == "3" || userParkName.ToLower() == "cuyahoga")
+            {
+                ParkInformationScreen("cuyahoga valley");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine($"{userParkName} is not a valid option, please enter one of the choices below...");
+                ChooseParkMenu(parks);
+            }          
         }
 
-        public static void ParkInformationScreen(string park)
+        public static void ParkInformationScreen(string parkName)
         {
-            Park p = viewParkDAL.GetParkByName(park, connectionString);
-            List<string> parkInfo = viewParkDAL.ViewParkInformation(park, connectionString);
+            Park p = viewParkDAL.GetParkByName(parkName, connectionString);
+
+            List<string> parkInfo = viewParkDAL.ViewParkInformation(parkName, connectionString);
+
             Console.WriteLine($"{parkInfo[0]} National Park");
             Console.WriteLine();
             Console.WriteLine("{0, -20}{1, 0}", $"Location:", $"{parkInfo[1]}");
@@ -107,7 +129,10 @@ namespace Capstone.Menus
             Console.WriteLine("{0, -20}{1, 0}", $"Area:", $"{parkInfo[3]}");
             Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
             Console.WriteLine();
-            Console.WriteLine($"{parkInfo[5]}");
+            //Console.WriteLine($"{parkInfo[5]}");
+
+
+
             //Console.WriteLine($"{parkInfo[5].Substring(0, parkInfo[5].ToString().Length / 3)}");
             //Console.WriteLine($"{parkInfo[5].Substring(parkInfo[5].Length / 3, parkInfo[5].Length / 3)}");
             //Console.WriteLine($"{parkInfo[5].Substring((parkInfo[5].Length / 3 * 2), parkInfo[5].Length / 3)}");
@@ -135,7 +160,7 @@ namespace Capstone.Menus
             {
                 Console.Clear();
                 Console.WriteLine("That is not a valid choice, please select from one of the below options: ");
-                ParkInformationScreen(park);
+                ParkInformationScreen(parkName);
             }
 
         }

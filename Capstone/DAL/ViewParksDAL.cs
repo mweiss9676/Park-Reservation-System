@@ -118,9 +118,9 @@ namespace Capstone.DAL
         public Park GetParkByName(string name, string connectionString)
         {
             Park p = new Park();
+
             if (DoesParkExist(name, connectionString))
-            {
-                
+            {                
                 try
                 {
                     using (SqlConnection conn = new SqlConnection(connectionString))
