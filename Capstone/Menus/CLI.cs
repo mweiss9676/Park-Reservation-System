@@ -15,6 +15,8 @@ namespace Capstone.Menus
         static ViewParksDAL viewParkDAL = new ViewParksDAL();
         static CampgroundDAL campgroundDAL = new CampgroundDAL();
         static CampsiteDAL campsiteDAL = new CampsiteDAL();
+        static ConsoleColor foregroundColor = ConsoleColor.Green;
+        static ConsoleColor backgroundColor = ConsoleColor.Black;
 
         static Dictionary<int, string> Months = new Dictionary<int, string>
         {
@@ -34,6 +36,14 @@ namespace Capstone.Menus
 
         public static void MainMenu()
         {
+            Console.Clear();
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
+            Console.Clear();
+            Console.SetWindowSize(Console.LargestWindowWidth, 41);
+            Console.SetBufferSize(Console.LargestWindowWidth, 100);
+            Console.SetWindowPosition(0, 0);
+
             while (true)
             {
                 Console.WriteLine("Welcome To The Park Reservation System!!");
@@ -98,6 +108,9 @@ namespace Capstone.Menus
             Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
             Console.WriteLine();
             Console.WriteLine($"{parkInfo[5]}");
+            //Console.WriteLine($"{parkInfo[5].Substring(0, parkInfo[5].ToString().Length / 3)}");
+            //Console.WriteLine($"{parkInfo[5].Substring(parkInfo[5].Length / 3, parkInfo[5].Length / 3)}");
+            //Console.WriteLine($"{parkInfo[5].Substring((parkInfo[5].Length / 3 * 2), parkInfo[5].Length / 3)}");
             Console.WriteLine();
             Console.WriteLine();
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
