@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Capstone.DAL;
 using Capstone.Models;
 using System.Configuration;
+using System.Text.RegularExpressions;
 
 namespace Capstone.Menus
 {
@@ -15,8 +16,11 @@ namespace Capstone.Menus
         static ViewParksDAL viewParkDAL = new ViewParksDAL();
         static CampgroundDAL campgroundDAL = new CampgroundDAL();
         static CampsiteDAL campsiteDAL = new CampsiteDAL();
-        static ConsoleColor foregroundColor = ConsoleColor.Green;
+        static ConsoleColor foregroundColor = ConsoleColor.White;
+        static ConsoleColor foregroundColorForText = ConsoleColor.Green;
         static ConsoleColor backgroundColor = ConsoleColor.Black;
+        static ConsoleColor backgroundColorForText = ConsoleColor.Black;
+
 
         static Dictionary<int, string> Months = new Dictionary<int, string>
         {
@@ -40,15 +44,22 @@ namespace Capstone.Menus
             Console.BackgroundColor = backgroundColor;
             Console.ForegroundColor = foregroundColor;
             Console.Clear();
-            Console.SetWindowSize(Console.LargestWindowWidth, 41);
-            Console.SetBufferSize(Console.LargestWindowWidth, 100);
+            Console.SetWindowSize(Console.LargestWindowWidth / 2, 41);
+            Console.SetBufferSize(Console.LargestWindowWidth * 2, 100);
             Console.SetWindowPosition(0, 0);
 
             while (true)
             {
-                Console.WriteLine("Welcome To The Park Reservation System!!");
+                PrintTrees();
+
+                Console.WriteLine();
+                PrintWelcome();
+
+                Console.WriteLine();
+                Console.WriteLine();
                 string[] menu = { "1) View Parks", "2) Quit" };
                 PrintMenuDoubleSpaced(menu);
+                PrintCampers();
 
                 string input = Console.ReadLine();
 
@@ -125,17 +136,25 @@ namespace Capstone.Menus
             Console.WriteLine($"{parkInfo[0]} National Park");
             Console.WriteLine();
             Console.WriteLine("{0, -20}{1, 0}", $"Location:", $"{parkInfo[1]}");
-            Console.WriteLine("{0, -20}{1, 0}", $"Established:", $"{parkInfo[2]}");
+            Console.WriteLine("{0, -20}{1, 0}", $"Established:", $"{parkInfo[2].Substring(0, 10)}");
             Console.WriteLine("{0, -20}{1, 0}", $"Area:", $"{parkInfo[3]}");
             Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
             Console.WriteLine();
-            //Console.WriteLine($"{parkInfo[5]}");
 
+            Regex reg = new Regex(@"(\b+)");
+            string[] aboutParagraph = reg.Split(parkInfo[5]);
 
+            int sizeOfParagraph = aboutParagraph.Length;
 
-            //Console.WriteLine($"{parkInfo[5].Substring(0, parkInfo[5].ToString().Length / 3)}");
-            //Console.WriteLine($"{parkInfo[5].Substring(parkInfo[5].Length / 3, parkInfo[5].Length / 3)}");
-            //Console.WriteLine($"{parkInfo[5].Substring((parkInfo[5].Length / 3 * 2), parkInfo[5].Length / 3)}");
+            for (int i = 0; i < sizeOfParagraph; i++)
+            {
+                Console.Write(aboutParagraph[i]);
+                if (i % 40 == 0)
+                {
+                    Console.WriteLine();
+                }
+            }
+
             Console.WriteLine();
             Console.WriteLine();
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
@@ -329,8 +348,12 @@ namespace Capstone.Menus
 
         private static void PrintMenuDoubleSpaced(string[] menu)
         {
+            int longest = menu.Max(x => x.Length);
+
             foreach (string s in menu)
             {
+                Console.SetCursorPosition((Console.WindowWidth - longest) / 2, Console.CursorTop);
+
                 Console.WriteLine();
                 Console.WriteLine(s);
                 Console.WriteLine();
@@ -338,10 +361,64 @@ namespace Capstone.Menus
         }
         private static void PrintMenuSingleSpace(string[] menu)
         {
+            int longest = menu.Max(x => x.Length);
+
             foreach (string s in menu)
             {
+                Console.SetCursorPosition((Console.WindowWidth - longest) / 2, Console.CursorTop);
+
                 Console.WriteLine(s);
             }
+        }
+
+        private static void PrintWelcome()
+        {
+
+            Console.BackgroundColor = backgroundColorForText;
+            Console.ForegroundColor = foregroundColorForText;
+            Console.WriteLine(":::       ::: :::::::::: :::        ::::::::   ::::::::  ::::    ::::  ::::::::::");
+            Console.WriteLine(":+:       :+: :+:        :+:       :+:    :+: :+:    :+: +:+:+: :+:+:+ :+:       ");
+            Console.WriteLine("+:+ +:+ +:+ + :+         +:+       +:+        +:+    +:+ +:+ :++:  +:+ +:+       ");
+            Console.WriteLine("+#+  +:+  +#+ +#++:++#   +#+       +#+        +#+    +:+ +#+  +:+  +#+ +#++:++#  ");
+            Console.WriteLine("+#+ +#+#+ +#+ +#+        +#+       +#+        +#+    +#+ +#+       +#+ +#+       ");
+            Console.WriteLine(" #+#+# #+#+#  #+#        #+#       #+#    #+# #+#    #+# #+#       #+# #+#       ");
+            Console.WriteLine("  ###   ###   ########## ########## ########   ########  ###       ### ##########");
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
+        }
+         
+        private static void PrintCampers()
+        {
+            //Console.SetCursorPosition(0, Console.WindowHeight - Console.WindowHeight / 3);
+            Console.BackgroundColor = backgroundColorForText;
+            Console.ForegroundColor = foregroundColorForText;
+            Console.SetCursorPosition((Console.CursorLeft / 3), Console.CursorTop);
+
+            Console.WriteLine(" ::::::::      :::     ::::    ::::  :::::::::  :::::::::: :::::::::   ::::::::  ");
+            Console.WriteLine(":+:    :+:   :+: :+:   +:+:+: :+:+:+ :+:    :+: :+:        :+:    :+: :+:    :+: ");
+            Console.WriteLine("+:+         +:+   +:+  +:+ +:+:+ +:+ +:+    +:+ +:+        +:+    +:+ +:+        ");
+            Console.WriteLine("+#+        +#++:++#++: +#+  +:+  +#+ +#++:++#+  +#++:++#   +#++:++#:  +#++:++#++ ");
+            Console.WriteLine("+#+        +#+     +#+ +#+       +#+ +#+        +#+        +#+    +#+        +#+ ");
+            Console.WriteLine("#+#    #+# #+#     #+# #+#       #+# #+#        #+#        #+#    #+# #+#    #+# ");
+            Console.WriteLine(" ########  ###     ### ###       ### ###        ########## ###    ###  ########  ");
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
+        }
+
+        private static void PrintTrees()
+        {
+            Console.ForegroundColor = foregroundColorForText;
+            Console.WriteLine(@"            ,@@@@@@@,                                ,@@@@@@@,                             ,@@@@@@@,                             ,@@@@@@@,                              ,@@@@@@@,                               ,@@@@@@@,                     ");
+            Console.WriteLine(@"    ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.         ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.         ");
+            Console.WriteLine(@" ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o       ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o      ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o     ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o      ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o       ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o        ");
+            Console.WriteLine(@",%&\%&&%&&%,@@@\@@@/@@@88\88888/88'     ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'    ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'   ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'    ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'     ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'       ");
+            Console.WriteLine(@"%&&%&%&/%&&%@@\@@/ /@@@88888\88888'     %&&%&%&/%&&%@@\@@/ /@@@88888\88888'    %&&%&%&/%&&%@@\@@/ /@@@88888\88888'   %&&%&%&/%&&%@@\@@/ /@@@88888\88888'    %&&%&%&/%&&%@@\@@/ /@@@88888\88888'     %&&%&%&/%&&%@@\@@/ /@@@88888\88888'       ");
+            Console.WriteLine(@"%&&%/ %&%%&&@@\ V /@@' `88\8 `/88'      %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'     %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'    %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'     %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'      %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'        ");
+            Console.WriteLine(@"`&%\ ` /%&'    |.|        \ '|8'        `&%\ ` /%&'    |.|        \ '|8'       `&%\ ` /%&'    |.|        \ '|8'      `&%\ ` /%&'    |.|        \ '|8'       `&%\ ` /%&'    |.|        \ '|8'        `&%\ ` /%&'    |.|        \ '|8'          ");
+            Console.WriteLine(@"    |o|        | |         | |              |o|        | |         | |             |o|        | |         | |            |o|        | |         | |             |o|        | |         | |              |o|        | |         | |            ");
+            Console.WriteLine(@"    |.|        | |         | |              |.|        | |         | |             |.|        | |         | |            |.|        | |         | |             |.|        | |         | |              |.|        | |         | |            ");
+            Console.WriteLine(@" \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_   \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_  \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_ \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_  \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_   \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_    ");
+            Console.ForegroundColor = foregroundColor;
         }
     }
 }
