@@ -288,12 +288,26 @@ namespace Capstone.Menus
                 }
             }
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
-            // make the reservation here
-            campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
 
-            Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");                       
-            
+
+            // ADDED BY JIMMY V 2-24 @ 2:04 PM//
+            // make reservation after some conditional checks
+            // first check to see if the campsite has already been reserved on these dates
+            if (campsiteDAL.IsSiteReservedOnThisDateRange(reserveSite, arrival, departure, connectionString))
+            {
+                // if the site has been reserved you will be sent back to the reservation menu
+                Console.WriteLine("This site is already reserved during the dates provided");
+                MakeNewReservation(campgrounds, selectedCampground);
+            }
+            else
+            {
+                // if the site has not been reserved on the provided dates the reservation will be created
+                campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
+
+                Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");
+            }                         
         }
+        // ^^ END ADDITIONS BY JIMMY V ^^ //
 
         public static void SearchForReservationByID()
         {

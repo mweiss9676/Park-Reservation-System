@@ -73,7 +73,7 @@ namespace Capstone.Tests
         }
 
         [TestMethod]
-        public void GetGetCampSiteAvailability_TotalCost_Test()
+        public void GetCampSiteAvailability_TotalCost_Test()
         {
             List<Campsite> output = s.GetCampsitesByAvailability(connectionString, cg, fromDate, toDate);
             List<Campsite> output2 = s.GetCampsitesByAvailability(connectionString, cg2, fromDate, toDate);
@@ -129,7 +129,21 @@ namespace Capstone.Tests
             Assert.IsNotNull(r);
             Assert.AreEqual("Lockhart Family Reservation", resName);
             Assert.AreEqual(1, siteId);
-            Assert.AreEqual("2/17/2018 12:00:00 AM, 2/20/2018 12:00:00 AM", dateRange);
+            Assert.AreEqual("2/18/2018 12:00:00 AM, 2/21/2018 12:00:00 AM", dateRange);
+        }
+
+        [TestMethod]
+        public void IsSiteReservedOnThisDateRange_Test()
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                s.CreateReservation(10, fromDate, toDate, "Jimmy Vanetta", connectionString);
+
+                bool result = s.IsSiteReservedOnThisDateRange(10, fromDate, toDate, connectionString);
+
+                Assert.AreEqual(true, result);
+            }
+
         }
     }
 }
