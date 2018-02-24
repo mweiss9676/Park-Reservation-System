@@ -172,7 +172,7 @@ namespace Capstone.DAL
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand(@"INSERT INTO reservation(site_id, name, from_date, to_date)
-                                                      VALUES(@siteid, @name, @arrival, @departure) WHERE @arrival != @arrival", conn);
+                                                      VALUES(@siteid, @name, @arrival, @departure)", conn);
                     cmd.Parameters.AddWithValue("@siteid", siteID);
                     cmd.Parameters.AddWithValue("@name", name);
                     cmd.Parameters.AddWithValue("@arrival", arrival);

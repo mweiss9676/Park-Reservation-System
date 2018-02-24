@@ -200,11 +200,11 @@ namespace Capstone.Menus
 
             if(campgrounds.Any(x => x.Name == result))
             {
-                MakeNewReservation(campgrounds, name: result);
+                CheckReservationAvailabilityMenu(campgrounds, name: result);
             }
             if (result == "1")
             {
-                MakeNewReservation(campgrounds);  // <-- why does this just use the 0th campground?
+                CheckReservationAvailabilityMenu(campgrounds);  // <-- why does this just use the 0th campground?
             }
             if (result == "2")
             {
@@ -218,10 +218,10 @@ namespace Capstone.Menus
             }
         }
 
-        private static void MakeNewReservation(List<Campground> campgrounds, string name = "") 
-        {
-            Campsite reservationSite = new Campsite();
+       
 
+        private static void CheckReservationAvailabilityMenu(List<Campground> campgrounds, string name = "") 
+        {
             string selectedCampground = name;
 
             if (selectedCampground == "")
@@ -235,79 +235,103 @@ namespace Capstone.Menus
 
             //right here we need to narrow down the list of campgrounds based on what the user selected
             Campground campground = campgroundDAL.GetCampgroundByName(selectedCampground, connectionString);
+            DateTime minDate = DateTime.Today;
 
+            if (arrival <= minDate)
+            {
+                Console.WriteLine("That is an unacceptable date, please re-enter your information");
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+            }
             if (arrival == departure)
             {
                 Console.WriteLine("You have selected the same arrival and departure day, minimum stay is 1 day...");
-                MakeNewReservation(campgrounds, selectedCampground);
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
             }
             if (departure < arrival)
             {
                 Console.WriteLine("You have selected a departure date that is earlier than your arrival date, have you made a mistake...?");
-                MakeNewReservation(campgrounds, selectedCampground);
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
             }
             if (!campgroundDAL.IsTheCampgroundOpen(campground, arrival, departure, connectionString))
             {
                 Console.Clear();
                 Console.WriteLine($"{campground.Name} campground is only open from {Months[campground.OpenFromDate]} to {Months[campground.OpenToDate]}, please choose another date range:");
-                MakeNewReservation(campgrounds);
+                CheckReservationAvailabilityMenu(campgrounds);
             }
+
+            CreateReservationMenu(selectedCampground, campgrounds, campground, arrival, departure, connectionString);
+        }
+
+
+
+        private static void CreateReservationMenu(string selectedCampground, List<Campground> campgrounds, 
+                                                  Campground campground, DateTime arrival, DateTime departure, 
+                                                  string connectionString)
+        {
 
             Console.WriteLine(campground.Name + " Campground");
             Console.WriteLine();
-            List<Campsite> sites = campsiteDAL.GetCampsitesByAvailability(connectionString, campground, arrival, departure);
+            List<Campsite> availableCampsites = campsiteDAL.GetCampsitesByAvailability(connectionString, campground, arrival, departure);
+
+            if (availableCampsites.Count == 0)
+            {
+                Console.Clear();
+                Console.WriteLine("I'm sorry, there are no available dates for your selected visit, please select again...");
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+            }
             Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"Site No.", $"Max Occup.", $"Accessible?", $"Max RV Length", $"Utility", $"Cost");
             Console.WriteLine();
 
-            foreach (var site in sites)
+            foreach (var site in availableCampsites)
             {
                 decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
                 Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost.ToString("c")}");
             }
             Console.WriteLine();
+            
+            Campsite reservationSite = new Campsite();//create a new campsite so that the user can book their stay
 
-            int reserveSite = CLIHelper.GetInteger("What site should be reserved?(enter 0 to cancel)");
-            if (reserveSite == 0)
+            int userSelectedSiteID = CLIHelper.GetInteger("What site should be reserved?(enter 0 to cancel)");
+
+            //first verify that the site_id entered exists from the list provided to the user only!
+            bool exists = availableCampsites.Any(x => x.SiteID == userSelectedSiteID);
+
+            if (userSelectedSiteID == 0)
             {
                 Console.Clear();
-                MakeNewReservation(campgrounds, selectedCampground);
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+            }
+            else if (exists)
+            {
+                reservationSite.SiteID = userSelectedSiteID;
+                //book a reservation based on the site_id
             }
             else
             {
-                //first verify that the site_id entered exists from the list provided to the user only!
-                bool exists = sites.Any(x => x.SiteID == reserveSite);
-                if (exists)
-                {
-                    reservationSite.SiteID = reserveSite;
-                    //book a reservation based on the site_id
-                }
-                else
-                {
-                    Console.WriteLine("That is not a valid option, please select from the choices above...");
-                    MakeNewReservation(campgrounds, selectedCampground);
-                }
+                Console.WriteLine("That is not a valid option, please select from the choices above...");
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+              
             }
+
+
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
-
-
-            // ADDED BY JIMMY V 2-24 @ 2:04 PM//
-            // make reservation after some conditional checks
-            // first check to see if the campsite has already been reserved on these dates
-            if (campsiteDAL.IsSiteReservedOnThisDateRange(reserveSite, arrival, departure, connectionString))
+            
+            if (availableCampsites.Any(x => x.SiteID == userSelectedSiteID))
             {
-                // if the site has been reserved you will be sent back to the reservation menu
-                Console.WriteLine("This site is already reserved during the dates provided");
-                MakeNewReservation(campgrounds, selectedCampground);
+                campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
+
+                Console.WriteLine($"The reservation has been created and the reservation id is " +
+                                  $"{campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");
+                Console.WriteLine("Press Enter to Return to the Main Menu");
+                Console.ReadLine();
             }
             else
             {
                 // if the site has not been reserved on the provided dates the reservation will be created
-                campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
-
-                Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");
-            }                         
+                Console.WriteLine("This site is already reserved during the dates provided");
+                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+            }
         }
-        // ^^ END ADDITIONS BY JIMMY V ^^ //
 
         public static void SearchForReservationByID()
         {
@@ -358,7 +382,6 @@ namespace Capstone.Menus
                 PrintReservationInformation(reservation);
             }
         }
-
 
         private static void PrintMenuDoubleSpaced(string[] menu)
         {
