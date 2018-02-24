@@ -248,6 +248,7 @@ namespace Capstone.Menus
             campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
 
             Console.WriteLine($"The reservation has been created and the confirmation id is {campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");                       
+            
         }
 
         public static void SearchForReservationByID()
@@ -256,6 +257,7 @@ namespace Capstone.Menus
             {
                 int reservationID = CLIHelper.GetInteger("What is your reservation id?");
                 string customerName = CLIHelper.GetString("What is your name?");
+       
                 Console.WriteLine();
 
                 if (campsiteDAL.FindReservationByID(reservationID, customerName, connectionString) != null)
