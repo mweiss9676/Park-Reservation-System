@@ -12,8 +12,10 @@ namespace Capstone.Tests
     [TestClass]
     public class ParksTests
     {
+        // DAL objects for the entire test class
         static ViewParksDAL v = new ViewParksDAL();
 
+        // database connection for entire test class
         static string connectionString = @"Server=.\SQLEXPRESS;Database=NationalParks;Trusted_Connection=True";
 
         [TestMethod]
@@ -36,6 +38,23 @@ namespace Capstone.Tests
 
             Assert.AreEqual("Acadia", p.Name);
             Assert.AreEqual(76518, a.Area);
+        }
+        [TestMethod]
+        public void ViewParkInformation_Test()
+        {
+            List<string> output = v.ViewParkInformation("Acadia", connectionString);
+
+            string park = output[0];
+            string location = output[1];
+            string establishDate = output[2];
+            string area = output[3];
+            string annualVisitors = output[4];
+
+            Assert.AreEqual("Acadia", park);
+            Assert.AreEqual("Maine", location);
+            Assert.AreEqual("2/26/1919 12:00:00 AM", establishDate);
+            Assert.AreEqual("47389", area);
+            Assert.AreEqual("2563129", annualVisitors);
         }
     }
 }

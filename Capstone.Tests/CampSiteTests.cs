@@ -6,12 +6,14 @@ using System.Configuration;
 using Capstone.DAL;
 using Capstone.Menus;
 using Capstone.Models;
+using System.Transactions;
 
 namespace Capstone.Tests
 {
     [TestClass]
     public class CampSiteTests
     {
+        // database connection for entire test class
         static string connectionString = @"Server=.\SQLEXPRESS;Database=NationalParks;Trusted_Connection=True";
 
         // DAL objects for the entire test class
@@ -25,14 +27,14 @@ namespace Capstone.Tests
         static Park p3 = v.GetParkByName("Cuyahoga Valley", connectionString);
 
         // lists of campgrounds for the entire test class
-        static List<Campground> cglist = c.GetCampgrounds(p, connectionString);
-        static List<Campground> cglist2 = c.GetCampgrounds(p2, connectionString);
-        static List<Campground> cglist3 = c.GetCampgrounds(p3, connectionString);
+        static List<Campground> cglist = c.GetCampgrounds(p, connectionString);// list of campgrounds for Acadia Park
+        static List<Campground> cglist2 = c.GetCampgrounds(p2, connectionString);// list of campgrounds for Arches Park 
+        static List<Campground> cglist3 = c.GetCampgrounds(p3, connectionString);// list of campgrounds for Cuyahoga Valley Park
 
         // specific campground objects for the entire test class
-        static Campground cg = cglist[0];
-        static Campground cg2 = cglist2[0];
-        static Campground cg3 = cglist3[0];
+        static Campground cg = cglist[0];// Blackwoods Campground
+        static Campground cg2 = cglist2[0];// Devil's Garden Campground
+        static Campground cg3 = cglist3[0];// The Un-named Primitive Campground
 
         // a sample of dates to use across entire test class
         static DateTime fromDate = new DateTime(2018, 4, 24);
@@ -49,9 +51,9 @@ namespace Capstone.Tests
             int result2 = output2.Count;
             int result3 = output3.Count;
 
-            Assert.AreEqual(result, 12);
-            Assert.AreEqual(result2, 8);
-            Assert.AreEqual(result3, 5);
+            Assert.AreEqual(12, result);
+            Assert.AreEqual(8, result2);
+            Assert.AreEqual(5, result3);
         }
 
         [TestMethod]
@@ -65,9 +67,9 @@ namespace Capstone.Tests
             int result2 = output2.Count;
             int result3 = output3.Count;
 
-            Assert.AreEqual(result, 9);
-            Assert.AreEqual(result2, 7);
-            Assert.AreEqual(result3, 0);
+            Assert.AreEqual(12, result);
+            Assert.AreEqual(8, result2);
+            Assert.AreEqual(5, result3);
         }
 
         [TestMethod]
@@ -82,14 +84,52 @@ namespace Capstone.Tests
             decimal result = s.CalculateCostOfReservation(cs, fromDate, toDate, connectionString);
             decimal result2 = s.CalculateCostOfReservation(cs2, fromDate, toDate, connectionString);
 
-            Assert.AreEqual(Decimal.Round(result, 2), 140.00m);
-            Assert.AreEqual(Decimal.Round(result2, 2), 100.00m);
+            Assert.AreEqual(140.00m, Decimal.Round(result, 2));
+            Assert.AreEqual(100.00m, Decimal.Round(result2, 2));
         }
 
         [TestMethod]
-        public void ReserveCampSite_Test()
+        public void CreateReservation_Test()
         {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                s.CreateReservation(10, fromDate, toDate, "Jimmy Vanetta", connectionString);
+                s.CreateReservation(1, fromDate, toDate, "Jimmy Vanetta", connectionString);
 
+                int result = s.GetReservationID(10, connectionString);
+                int result2 = s.GetReservationID(1, connectionString);
+
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result2);
+            }
+        }
+
+        [TestMethod]
+        public void GetReservationID_Test()
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                s.CreateReservation(10, fromDate, toDate, "Jimmy Vanetta", connectionString);
+
+                int result = s.GetReservationID(10, connectionString);
+
+                Assert.IsNotNull(result);
+            }
+        }
+
+        [TestMethod]
+        public void FindReservationByName()
+        {
+            Reservation r = s.FindReservationByID(2, "Lockhart Family Reservation", connectionString);
+            
+            string dateRange = r.FromDate.ToString() + ", " + r.ToDate.ToString();
+            string resName = r.Name;
+            int siteId = r.SiteID;
+
+            Assert.IsNotNull(r);
+            Assert.AreEqual("Lockhart Family Reservation", resName);
+            Assert.AreEqual(1, siteId);
+            Assert.AreEqual("2/17/2018 12:00:00 AM, 2/20/2018 12:00:00 AM", dateRange);
         }
     }
 }

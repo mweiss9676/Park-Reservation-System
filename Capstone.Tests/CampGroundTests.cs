@@ -12,21 +12,26 @@ namespace Capstone.Tests
     [TestClass]
     public class CampGroundTests
     {
+        // database connection for entire test class
         static string connectionString = @"Server=.\SQLEXPRESS;Database=NationalParks;Trusted_Connection=True";
 
+        // DAL objects for the entire test class
         static ViewParksDAL v = new ViewParksDAL();
         static CampgroundDAL c = new CampgroundDAL();
 
+        // park objects for the entire test class
         static Park p = v.GetParkByName("Acadia", connectionString);
         static Park p2 = v.GetParkByName("Arches", connectionString);
         static Park p3 = v.GetParkByName("Cuyahoga Valley", connectionString);
 
-        static List<Campground> cg = c.GetCampgrounds(p, connectionString);
-        static List<Campground> cg2 = c.GetCampgrounds(p2, connectionString);
-        static List<Campground> cg3 = c.GetCampgrounds(p3, connectionString);
+        // lists of campgrounds for the entire test class
+        static List<Campground> cg = c.GetCampgrounds(p, connectionString);// list of campgrounds for Acadia Park
+        static List<Campground> cg2 = c.GetCampgrounds(p2, connectionString);// list of campgrounds for Arches Park
+        static List<Campground> cg3 = c.GetCampgrounds(p3, connectionString);// list of campgrounds for Cuyahoga Valley Park
 
-        static DateTime fromDate = new DateTime(2018, 4, 24);
-        static DateTime toDate = new DateTime(2018, 4, 28);
+        // a sample of dates to use across entire test class
+        static DateTime fromDate = new DateTime(2018, 4, 24);// start date
+        static DateTime toDate = new DateTime(2018, 4, 28);// end date
 
         [TestMethod]
         public void GetCampGrounds_CountList_Test()
@@ -35,9 +40,9 @@ namespace Capstone.Tests
             int result2 = cg2.Count;
             int result3 = cg3.Count;
 
-            Assert.AreEqual(result, 3);
-            Assert.AreEqual(result2, 3);
-            Assert.AreEqual(result3, 1);
+            Assert.AreEqual(3, result);
+            Assert.AreEqual(3, result2);
+            Assert.AreEqual(1, result3);
         }
 
         [TestMethod]
@@ -47,9 +52,9 @@ namespace Capstone.Tests
             string result2 = cg[1].Name;
             string result3 = cg[2].Name;
 
-            Assert.AreEqual(result, "Blackwoods");
-            Assert.AreEqual(result2, "Seawall");
-            Assert.AreEqual(result3, "Schoodic Woods");
+            Assert.AreEqual("Blackwoods", result);
+            Assert.AreEqual("Seawall", result2);
+            Assert.AreEqual("Schoodic Woods", result3);
         }
 
         [TestMethod]
@@ -59,9 +64,9 @@ namespace Capstone.Tests
             string result2 = cg2[1].Name;
             string result3 = cg2[2].Name;
 
-            Assert.AreEqual(result, "Devil's Garden");
-            Assert.AreEqual(result2, "Canyon Wren Group Site");
-            Assert.AreEqual(result3, "Juniper Group Site");
+            Assert.AreEqual("Devil's Garden", result);
+            Assert.AreEqual("Canyon Wren Group Site", result2);
+            Assert.AreEqual("Juniper Group Site", result3);
         }
 
         [TestMethod]
@@ -78,23 +83,23 @@ namespace Capstone.Tests
             Campground campground2 = c.GetCampgroundByName("Juniper Group Site", connectionString);
             Campground campground3 = c.GetCampgroundByName("The Unnamed Primitive Campsites", connectionString);
 
-            // asserting first campground
-            Assert.AreEqual(campground.CampgroundID, 1);
-            Assert.AreEqual(campground.DailyFee, 35m);
-            Assert.AreEqual(campground.OpenFromDate, 1);
-            Assert.AreEqual(campground.OpenToDate, 12);
+            // asserting campground
+            Assert.AreEqual(1, campground.CampgroundID);
+            Assert.AreEqual(35m, campground.DailyFee);
+            Assert.AreEqual(1, campground.OpenFromDate);
+            Assert.AreEqual(12, campground.OpenToDate);
 
             // asserting campground2
-            Assert.AreEqual(campground2.CampgroundID, 6);
-            Assert.AreEqual(campground2.DailyFee, 250m);
-            Assert.AreEqual(campground2.OpenFromDate, 1);
-            Assert.AreEqual(campground2.OpenToDate, 12);
+            Assert.AreEqual(6, campground2.CampgroundID);
+            Assert.AreEqual(250m, campground2.DailyFee);
+            Assert.AreEqual(1, campground2.OpenFromDate);
+            Assert.AreEqual(12, campground2.OpenToDate);
 
             // asserting campground3
-            Assert.AreEqual(campground3.CampgroundID, 7);
-            Assert.AreEqual(campground3.DailyFee, 20m);
-            Assert.AreEqual(campground3.OpenFromDate, 5);
-            Assert.AreEqual(campground3.OpenToDate, 11);
+            Assert.AreEqual(7, campground3.CampgroundID);
+            Assert.AreEqual(20m, campground3.DailyFee);
+            Assert.AreEqual(5, campground3.OpenFromDate);
+            Assert.AreEqual(11, campground3.OpenToDate);
         }
         
         [TestMethod]
@@ -110,10 +115,10 @@ namespace Capstone.Tests
             bool result3 = c.IsTheCampgroundOpen(campground3, fromDate, toDate, connectionString);
             bool result4 = c.IsTheCampgroundOpen(campground4, fromDate, toDate, connectionString);
 
-            Assert.AreEqual(result, true);
-            Assert.AreEqual(result2, false);
-            Assert.AreEqual(result3, false);
-            Assert.AreEqual(result4, true);
+            Assert.AreEqual(true, result);
+            Assert.AreEqual(false, result2);
+            Assert.AreEqual(false, result3);
+            Assert.AreEqual(true, result4);
         }
     }
 }
