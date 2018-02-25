@@ -218,8 +218,6 @@ namespace Capstone.Menus
             }
         }
 
-       
-
         private static void CheckReservationAvailabilityMenu(List<Campground> campgrounds, string name = "") 
         {
             string selectedCampground = name;
@@ -261,8 +259,6 @@ namespace Capstone.Menus
 
             CreateReservationMenu(selectedCampground, campgrounds, campground, arrival, departure, connectionString);
         }
-
-
 
         private static void CreateReservationMenu(string selectedCampground, List<Campground> campgrounds, 
                                                   Campground campground, DateTime arrival, DateTime departure, 
@@ -313,10 +309,14 @@ namespace Capstone.Menus
               
             }
 
-
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
+
+            // ADDED BY JIMMY V 2-25 @ 9:45 AM // 
             
-            if (availableCampsites.Any(x => x.SiteID == userSelectedSiteID))
+            // I added the IsSiteReserved method I created to the logic below //
+            // I also refactored the method's name to be shorter //
+            // There seems to be a weird loop going on in this menu //
+            if (!campsiteDAL.IsSiteReserved(userSelectedSiteID, arrival, departure, connectionString) && availableCampsites.Any(x => x.SiteID == userSelectedSiteID))
             {
                 campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
 
@@ -325,6 +325,7 @@ namespace Capstone.Menus
                 Console.WriteLine("Press Enter to Return to the Main Menu");
                 Console.ReadLine();
             }
+            // ^^ END ADDITIONS BY JIMMY V ^^ //
             else
             {
                 // if the site has not been reserved on the provided dates the reservation will be created

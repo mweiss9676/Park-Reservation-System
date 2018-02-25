@@ -259,8 +259,7 @@ namespace Capstone.DAL
             return null;
         }
 
-
-        // ADDED BY JIMMY V 2-24 @ 2:04 pm//
+        // ADDED BY JIMMY V 2-24 @ 2:04 AM//
         /// <summary>
         /// This method checks to see if the desired campsite already has a reservation on the selected dates
         /// </summary>
@@ -269,7 +268,9 @@ namespace Capstone.DAL
         /// <param name="departure">Departure Date</param>
         /// <param name="connectionString">DataBase Connection String</param>
         /// <returns>Returns TRUE if site has been reserved already. Returns FALSE if it HAS NOT been reserved</returns>
-        public bool IsSiteReservedOnThisDateRange(int siteID, DateTime arrival, DateTime departure, string connectionString)
+        // ADDED BY JIMMY V 2-24 @ 9:45 AM//
+        // !! I refactored this methods name to be much shorter //
+        public bool IsSiteReserved(int siteID, DateTime arrival, DateTime departure, string connectionString)
         {
             try
             {
