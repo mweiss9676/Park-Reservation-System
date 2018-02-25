@@ -262,58 +262,5 @@ namespace Capstone.DAL
             }
             return null;
         }
-
-        // ADDED BY JIMMY V 2-24 @ 2:04 AM//
-        /// <summary>
-        /// This method checks to see if the desired campsite already has a reservation on the selected dates
-        /// </summary>
-        /// <param name="siteID">Campsite ID</param>
-        /// <param name="arrival">Arrival Date</param>
-        /// <param name="departure">Departure Date</param>
-        /// <param name="connectionString">DataBase Connection String</param>
-        /// <returns>Returns TRUE if site has been reserved already. Returns FALSE if it HAS NOT been reserved</returns>
-        // ADDED BY JIMMY V 2-24 @ 9:45 AM//
-        // !! I refactored this methods name to be much shorter //
-        public bool IsSiteReserved(int siteID, DateTime arrival, DateTime departure, string connectionString)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand(@"SELECT *
-                                                      FROM reservation
-                                                      WHERE site_id = @site_id
-                                                      AND from_date = @arrival AND to_date = @departure", conn);
-
-                    cmd.Parameters.AddWithValue("@site_id", siteID);
-                    cmd.Parameters.AddWithValue("@arrival", arrival);
-                    cmd.Parameters.AddWithValue("@departure", departure);
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        Reservation r = new Reservation();
-
-                        r.Name = Convert.ToString(reader["name"]);
-                        r.SiteID = Convert.ToInt32(reader["site_id"]);
-                        r.ReservationID = Convert.ToInt32(reader["reservation_id"]);
-                        r.FromDate = Convert.ToDateTime(reader["from_date"]);
-                        r.ToDate = Convert.ToDateTime(reader["to_date"]);
-                        r.FoundedDate = Convert.ToDateTime(reader["create_date"]);
-
-                        return true;
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return false;
-        }
-        // ^^ END ADDITIONS BY JIMMY V ^^ //
     }
 }

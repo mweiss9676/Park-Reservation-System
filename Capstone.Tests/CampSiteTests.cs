@@ -131,20 +131,5 @@ namespace Capstone.Tests
             Assert.AreEqual(1, siteId);
             Assert.AreEqual("2/19/2018 12:00:00 AM, 2/22/2018 12:00:00 AM", dateRange);
         }
-
-        [TestMethod]
-        public void IsSiteReservedOnThisDateRange_Test()
-        {
-            using (TransactionScope transaction = new TransactionScope())
-            {
-                s.CreateReservation(10, fromDate, toDate, "Jimmy Vanetta", connectionString);
-
-                bool result = s.IsSiteReserved(10, fromDate, toDate, connectionString);
-                bool result2 = s.IsSiteReserved(1, fromDate, toDate, connectionString);
-
-                Assert.AreEqual(true, result);
-                Assert.AreEqual(false, result2);
-            }
-        }
     }
 }

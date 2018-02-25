@@ -324,16 +324,10 @@ namespace Capstone.Menus
                 Console.Clear();
                 Console.WriteLine("That is not a valid option, please select from the choices below...");
                 CreateReservationMenu(selectedCampground, campgrounds, campground, arrival, departure, connectionString);
-              
             }
 
             string nameOfReservation = CLIHelper.GetString("What name should the reservation be placed under?");
 
-            // ADDED BY JIMMY V 2-25 @ 9:45 AM // 
-            
-            // I added the IsSiteReserved method I created to the logic below //
-            // I also refactored the method's name to be shorter //
-            // There seems to be a weird loop going on in this menu //
             if (availableCampsites.Any(x => x.SiteID == userSelectedSiteID))
             {
                 campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
@@ -344,7 +338,6 @@ namespace Capstone.Menus
                 Console.ReadLine();
                 MainMenu();
             }
-            // ^^ END ADDITIONS BY JIMMY V ^^ //
             else
             {
                 // if the site has not been reserved on the provided dates the reservation will be created
@@ -357,7 +350,9 @@ namespace Capstone.Menus
         {
             while (true)
             {
-                int reservationID = CLIHelper.GetInteger("What is your reservation id? (0 to exit)");
+                PrintTrees();
+                Console.WriteLine("What is your reservation id? (0 to exit)");
+                int reservationID = CLIHelper.GetInteger("Enter Id: ");
                 if (reservationID == 0)
                 {
                     Console.Clear();
@@ -368,6 +363,7 @@ namespace Capstone.Menus
 
                 if (campsiteDAL.FindReservationByID(reservationID, customerName, connectionString) != null)
                 {
+                    Console.Clear();
                     Console.WriteLine("Thank you! We found your reservation: ");
                     Console.WriteLine();
                     PrintReservationInformation(campsiteDAL.FindReservationByID(reservationID, customerName, connectionString));
@@ -383,10 +379,12 @@ namespace Capstone.Menus
 
         private static void PrintReservationInformation(Reservation reservation)
         {
+            PrintTrees();
             Console.WriteLine($"We have you staying from {reservation.FromDate} through {reservation.ToDate}.");
             Console.WriteLine($"Your stay is under the name {reservation.Name} at site: {reservation.SiteID}");
             Console.WriteLine("Enjoy your stay!");
             PrintMenuDoubleSpaced(new[] { "1) Return to the Main Menu", "2) Quit" });
+            PrintTreesBottom();
             string option = CLIHelper.GetString("");
             if (option == "1")
             {
