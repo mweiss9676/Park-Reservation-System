@@ -16,7 +16,7 @@ namespace Capstone.Tests
         static string connectionString = @"Server=.\SQLEXPRESS;Database=NationalParks;Trusted_Connection=True";
 
         // DAL objects for the entire test class
-        static ViewParksDAL v = new ViewParksDAL();
+        static ParkDAL v = new ParkDAL();
         static CampgroundDAL c = new CampgroundDAL();
 
         // park objects for the entire test class

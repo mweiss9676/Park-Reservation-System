@@ -8,7 +8,7 @@ using Capstone.Models;
 
 namespace Capstone.DAL
 {
-    public class ViewParksDAL
+    public class ParkDAL
     {
         public List<Park> ViewParks(string connectionString)
         {

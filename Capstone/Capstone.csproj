@@ -50,7 +50,7 @@
     <Compile Include="Exceptions\ParkExceptions.cs" />
     <Compile Include="Menus\CLI.cs" />
     <Compile Include="Menus\CLIHelper.cs" />
-    <Compile Include="DAL\ViewParksDAL.cs" />
+    <Compile Include="DAL\ParkDAL.cs" />
     <Compile Include="Models\Campground.cs" />
     <Compile Include="Models\Park.cs" />
     <Compile Include="Models\Reservation.cs" />

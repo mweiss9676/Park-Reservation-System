@@ -13,7 +13,7 @@ namespace Capstone.Tests
     public class ParksTests
     {
         // DAL objects for the entire test class
-        static ViewParksDAL v = new ViewParksDAL();
+        static ParkDAL v = new ParkDAL();
 
         // database connection for entire test class
         static string connectionString = @"Server=.\SQLEXPRESS;Database=NationalParks;Trusted_Connection=True";

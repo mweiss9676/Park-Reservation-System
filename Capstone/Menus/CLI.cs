@@ -13,7 +13,7 @@ namespace Capstone.Menus
     public class CLI
     {
         static string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
-        static ViewParksDAL viewParkDAL = new ViewParksDAL();
+        static ParkDAL viewParkDAL = new ParkDAL();
         static CampgroundDAL campgroundDAL = new CampgroundDAL();
         static CampsiteDAL campsiteDAL = new CampsiteDAL();
         static ConsoleColor foregroundColor = ConsoleColor.White;
@@ -44,7 +44,7 @@ namespace Capstone.Menus
             Console.BackgroundColor = backgroundColor;
             Console.ForegroundColor = foregroundColor;
             Console.Clear();
-            Console.SetWindowSize(Console.LargestWindowWidth / 2, 41);
+            Console.SetWindowSize(Console.LargestWindowWidth, 41);
             Console.SetBufferSize(Console.LargestWindowWidth * 2, 100);
             Console.SetWindowPosition(0, 0);
 
@@ -79,7 +79,8 @@ namespace Capstone.Menus
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine("That is not a valid option, please select from one of the following choices: ");
+                    PrintMenuSingleSpace(new[] { "That is not a valid option, please select from one of the following choices: " });
+                    Console.WriteLine();
                     MainMenu();
                 }
             }
@@ -87,16 +88,23 @@ namespace Capstone.Menus
 
         public static void ChooseParkMenu(List<Park> parks)
         {
-            Console.WriteLine("Viewing All Parks...");
+            PrintTrees();
+            Console.WriteLine();
+            PrintMenuSingleSpace(new[] { "Viewing All Parks..." });
+            Console.WriteLine();
+
             List<string> menu = new List<string>();
+
             for (int i = 1; i <= parks.Count; i++)
             {
                 menu.Add(i + ") " + parks[i - 1].Name);
             }
             PrintMenuDoubleSpaced(menu.ToArray());
 
-            Console.WriteLine("Please Select a Park for More Information");
 
+            PrintMenuSingleSpace(new[] { "Please Select a Park for More Information" });
+
+            PrintTrees();
             string userParkName = Console.ReadLine();
 
             Console.Clear();
@@ -122,42 +130,36 @@ namespace Capstone.Menus
             else
             {
                 Console.Clear();
-                Console.WriteLine($"{userParkName} is not a valid option, please enter one of the choices below...");
+                PrintMenuSingleSpace(new[] { $"{userParkName} is not a valid option, please enter one of the choices below..." });
+                Console.WriteLine();
                 ChooseParkMenu(parks);
             }          
         }
 
         public static void ParkInformationScreen(string parkName)
         {
+
+            PrintTrees();
+            Console.WriteLine();
             Park p = viewParkDAL.GetParkByName(parkName, connectionString);
 
             List<string> parkInfo = viewParkDAL.ViewParkInformation(parkName, connectionString);
 
-            Console.WriteLine($"{parkInfo[0]} National Park");
-            Console.WriteLine();
-            Console.WriteLine("{0, -20}{1, 0}", $"Location:", $"{parkInfo[1]}");
-            Console.WriteLine("{0, -20}{1, 0}", $"Established:", $"{parkInfo[2].Substring(0, 10)}");
-            Console.WriteLine("{0, -20}{1, 0}", $"Area:", $"{parkInfo[3]}");
-            Console.WriteLine("{0, -20}{1, 0}", $"Annual Visitors:", $"{parkInfo[4]}");
+            PrintMenuSingleSpace(new[] { $"{parkInfo[0]} National Park", "", "Location:".PadRight(20) + $"{parkInfo[1]}",
+                                        $"Established:".PadRight(20) + $"{parkInfo[2].Substring(0, 10)}",
+                                        $"Area:".PadRight(20) + $"{parkInfo[3]}", $"Annual Visitors:".PadRight(20) + $"{parkInfo[4]}"});
             Console.WriteLine();
 
-            Regex reg = new Regex(@"(\b+)");
-            string[] aboutParagraph = reg.Split(parkInfo[5]);
-
-            int sizeOfParagraph = aboutParagraph.Length;
-
-            for (int i = 0; i < sizeOfParagraph; i++)
-            {
-                Console.Write(aboutParagraph[i]);
-                if (i % 40 == 0)
-                {
-                    Console.WriteLine();
-                }
-            }
+            string[] result = SpliceText(parkInfo[5], 80);
+            PrintMenuSingleSpace(result ); 
+           
 
             Console.WriteLine();
             Console.WriteLine();
-            PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Previous Screen"});
+            PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Park Selection Menu"});
+
+            PrintTrees();
+
             string input = CLIHelper.GetString("Select a Command");
 
             if (input == "1")
@@ -178,7 +180,7 @@ namespace Capstone.Menus
             else
             {
                 Console.Clear();
-                Console.WriteLine("That is not a valid choice, please select from one of the below options: ");
+                PrintMenuDoubleSpaced(new[] { "That is not a valid choice, please select from one of the below options: " });
                 ParkInformationScreen(parkName);
             }
 
@@ -186,16 +188,22 @@ namespace Capstone.Menus
 
         public static void ParkCampgroundScreen(Park park)
         {
+            PrintTrees();
+            Console.WriteLine();
             List<Campground> campgrounds = campgroundDAL.GetCampgrounds(park, connectionString);
 
-            Console.WriteLine("{0, -20}{1, -20}{2, -20}{3, -20}", $"Name", $"Open", $"Close", $"Daily Fee");
+            Console.SetCursorPosition((Console.WindowWidth - 70) / 2, Console.CursorTop);
+            Console.WriteLine("{0, -40}{1, -20}{2, -20}{3, -20}", $"Name", $"Open", $"Close", $"Daily Fee");
             Console.WriteLine();
             for (int i = 0; i < campgrounds.Count; i++)
             {
-                Console.WriteLine("{0, -20}{1, -20}{2, -20}{3, -20}",  $"{campgrounds[i].Name}", $"{Months[campgrounds[i].OpenFromDate]}", $"{Months[campgrounds[i].OpenToDate]}", $"{campgrounds[i].DailyFee.ToString("c")}");
+                Console.SetCursorPosition((Console.WindowWidth - 70) / 2, Console.CursorTop);
+                Console.WriteLine("{0, -40}{1, -20}{2, -20}{3, -20}",  $"{campgrounds[i].Name}", $"{Months[campgrounds[i].OpenFromDate]}", $"{Months[campgrounds[i].OpenToDate]}", $"{campgrounds[i].DailyFee.ToString("c")}");
             }
-
+            Console.WriteLine();
+            Console.WriteLine();
             PrintMenuDoubleSpaced(new[] { "1) Search For Available Reservation", "2) Return to Previous Screen" });
+            PrintTrees();
             string result = CLIHelper.GetString("Select an Option");
 
             if(campgrounds.Any(x => x.Name == result))
@@ -209,17 +217,19 @@ namespace Capstone.Menus
             if (result == "2")
             {
                 Console.Clear();
+                ParkInformationScreen(park.Name);
             }
             else
             {
                 Console.Clear();
-                Console.WriteLine("That is not a valid option, please select from the choices below...");
+                PrintMenuDoubleSpaced(new[] { "That is not a valid option, please select from the choices below..." });
                 ParkCampgroundScreen(park);
             }
         }
 
         private static void CheckReservationAvailabilityMenu(List<Campground> campgrounds, string name = "") 
         {
+            Console.WriteLine();
             string selectedCampground = name;
 
             if (selectedCampground == "")
@@ -231,30 +241,33 @@ namespace Capstone.Menus
             DateTime departure = CLIHelper.GetDateTime("What is the departure date? (Month/Day/Year)");
             Console.Clear();
 
+
             //right here we need to narrow down the list of campgrounds based on what the user selected
             Campground campground = campgroundDAL.GetCampgroundByName(selectedCampground, connectionString);
             DateTime minDate = DateTime.Today;
 
+
+            Park p = campgroundDAL.GetParkByCampgroundName(selectedCampground, connectionString);
             if (arrival <= minDate)
             {
-                Console.WriteLine("That is an unacceptable date, please re-enter your information");
-                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+                PrintMenuDoubleSpaced(new[] { "That is an unacceptable date, please re-enter your information" });
+                ParkCampgroundScreen(p);
             }
             if (arrival == departure)
             {
-                Console.WriteLine("You have selected the same arrival and departure day, minimum stay is 1 day...");
-                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+                PrintMenuDoubleSpaced(new[] { "You have selected the same arrival and departure day, minimum stay is 1 day..." });
+                ParkCampgroundScreen(p);
             }
             if (departure < arrival)
             {
-                Console.WriteLine("You have selected a departure date that is earlier than your arrival date, have you made a mistake...?");
-                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+                PrintMenuDoubleSpaced(new[] { "You have selected a departure date that is earlier than your arrival date, have you made a mistake...?" });
+                ParkCampgroundScreen(p);
             }
             if (!campgroundDAL.IsTheCampgroundOpen(campground, arrival, departure, connectionString))
             {
                 Console.Clear();
-                Console.WriteLine($"{campground.Name} campground is only open from {Months[campground.OpenFromDate]} to {Months[campground.OpenToDate]}, please choose another date range:");
-                CheckReservationAvailabilityMenu(campgrounds);
+                PrintMenuDoubleSpaced(new[] { $"{campground.Name} campground is only open from {Months[campground.OpenFromDate]} to {Months[campground.OpenToDate]}, please choose another date range:" });
+                ParkCampgroundScreen(p);
             }
 
             CreateReservationMenu(selectedCampground, campgrounds, campground, arrival, departure, connectionString);
@@ -264,30 +277,34 @@ namespace Capstone.Menus
                                                   Campground campground, DateTime arrival, DateTime departure, 
                                                   string connectionString)
         {
+            PrintMenuDoubleSpaced(new[] { campground.Name + " Campground" });
 
-            Console.WriteLine(campground.Name + " Campground");
+            PrintTrees();
             Console.WriteLine();
             List<Campsite> availableCampsites = campsiteDAL.GetCampsitesByAvailability(connectionString, campground, arrival, departure);
 
             if (availableCampsites.Count == 0)
             {
                 Console.Clear();
-                Console.WriteLine("I'm sorry, there are no available dates for your selected visit, please select again...");
+                PrintMenuDoubleSpaced(new[] { "I'm sorry, there are no available dates for your selected visit, please select again..." });
                 CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
             }
+            Console.SetCursorPosition((Console.WindowWidth - 80) / 2, Console.CursorTop);
             Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"Site No.", $"Max Occup.", $"Accessible?", $"Max RV Length", $"Utility", $"Cost");
             Console.WriteLine();
 
             foreach (var site in availableCampsites)
             {
                 decimal totalCost = campsiteDAL.CalculateCostOfReservation(site, arrival, departure, connectionString);
+                Console.SetCursorPosition((Console.WindowWidth - 80) / 2, Console.CursorTop);
                 Console.WriteLine("{0, -15}{1, -15}{2, -15}{3, -15}{4, -15}{5, -15}", $"{site.SiteID}", $"{site.MaxOccupancy}", $"{site.Accessible}", $"{site.MaxRvLength}", $"{site.Utilities}", $"{totalCost.ToString("c")}");
             }
             Console.WriteLine();
             
             Campsite reservationSite = new Campsite();//create a new campsite so that the user can book their stay
 
-            int userSelectedSiteID = CLIHelper.GetInteger("What site should be reserved?(enter 0 to cancel)");
+            PrintTrees();
+            int userSelectedSiteID = CLIHelper.GetInteger("What site should be reserved?(To Return to the Main Menu press (0))");
 
             //first verify that the site_id entered exists from the list provided to the user only!
             bool exists = availableCampsites.Any(x => x.SiteID == userSelectedSiteID);
@@ -295,7 +312,7 @@ namespace Capstone.Menus
             if (userSelectedSiteID == 0)
             {
                 Console.Clear();
-                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+                MainMenu();
             }
             else if (exists)
             {
@@ -304,8 +321,9 @@ namespace Capstone.Menus
             }
             else
             {
-                Console.WriteLine("That is not a valid option, please select from the choices above...");
-                CheckReservationAvailabilityMenu(campgrounds, selectedCampground);
+                Console.Clear();
+                Console.WriteLine("That is not a valid option, please select from the choices below...");
+                CreateReservationMenu(selectedCampground, campgrounds, campground, arrival, departure, connectionString);
               
             }
 
@@ -316,7 +334,7 @@ namespace Capstone.Menus
             // I added the IsSiteReserved method I created to the logic below //
             // I also refactored the method's name to be shorter //
             // There seems to be a weird loop going on in this menu //
-            if (!campsiteDAL.IsSiteReserved(userSelectedSiteID, arrival, departure, connectionString) && availableCampsites.Any(x => x.SiteID == userSelectedSiteID))
+            if (availableCampsites.Any(x => x.SiteID == userSelectedSiteID))
             {
                 campsiteDAL.CreateReservation(reservationSite.SiteID, arrival, departure, nameOfReservation, connectionString);
 
@@ -324,6 +342,7 @@ namespace Capstone.Menus
                                   $"{campsiteDAL.GetReservationID(reservationSite.SiteID, connectionString)}");
                 Console.WriteLine("Press Enter to Return to the Main Menu");
                 Console.ReadLine();
+                MainMenu();
             }
             // ^^ END ADDITIONS BY JIMMY V ^^ //
             else
@@ -338,9 +357,13 @@ namespace Capstone.Menus
         {
             while (true)
             {
-                int reservationID = CLIHelper.GetInteger("What is your reservation id?");
+                int reservationID = CLIHelper.GetInteger("What is your reservation id? (0 to exit)");
+                if (reservationID == 0)
+                {
+                    Console.Clear();
+                    MainMenu();
+                }
                 string customerName = CLIHelper.GetString("What is your name?");
-       
                 Console.WriteLine();
 
                 if (campsiteDAL.FindReservationByID(reservationID, customerName, connectionString) != null)
@@ -355,7 +378,6 @@ namespace Capstone.Menus
                     Console.WriteLine($"{customerName} with a reservation id of {reservationID} is not in our system, please re-enter your information: ");
                     SearchForReservationByID();
                 }
-                //Console.ReadLine();
             }
         }
 
@@ -384,6 +406,17 @@ namespace Capstone.Menus
             }
         }
 
+        public static string[] SpliceText(string text, int lineLength)
+        {
+            var charCount = 0;
+            var lines = text.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                            .GroupBy(w => (charCount += w.Length + 1) / lineLength)
+                            .Select(g => string.Join(" ", g));
+
+            string[] result = lines.ToArray();
+            return result;
+        }
+
         private static void PrintMenuDoubleSpaced(string[] menu)
         {
             int longest = menu.Max(x => x.Length);
@@ -392,7 +425,6 @@ namespace Capstone.Menus
             {
                 Console.SetCursorPosition((Console.WindowWidth - longest) / 2, Console.CursorTop);
 
-                Console.WriteLine();
                 Console.WriteLine(s);
                 Console.WriteLine();
             }
@@ -414,31 +446,37 @@ namespace Capstone.Menus
 
             Console.BackgroundColor = backgroundColorForText;
             Console.ForegroundColor = foregroundColorForText;
-            Console.WriteLine(":::       ::: :::::::::: :::        ::::::::   ::::::::  ::::    ::::  ::::::::::");
-            Console.WriteLine(":+:       :+: :+:        :+:       :+:    :+: :+:    :+: +:+:+: :+:+:+ :+:       ");
-            Console.WriteLine("+:+ +:+ +:+ + :+         +:+       +:+        +:+    +:+ +:+ :++:  +:+ +:+       ");
-            Console.WriteLine("+#+  +:+  +#+ +#++:++#   +#+       +#+        +#+    +:+ +#+  +:+  +#+ +#++:++#  ");
-            Console.WriteLine("+#+ +#+#+ +#+ +#+        +#+       +#+        +#+    +#+ +#+       +#+ +#+       ");
-            Console.WriteLine(" #+#+# #+#+#  #+#        #+#       #+#    #+# #+#    #+# #+#       #+# #+#       ");
-            Console.WriteLine("  ###   ###   ########## ########## ########   ########  ###       ### ##########");
+
+            List<string> welcome = new List<string>();
+
+            welcome.Add(":::       ::: :::::::::: :::        ::::::::   ::::::::  ::::    ::::  ::::::::::");
+            welcome.Add(":+:       :+: :+:        :+:       :+:    :+: :+:    :+: +:+:+: :+:+:+ :+:       ");
+            welcome.Add("+:+ +:+ +:+ + :+         +:+       +:+        +:+    +:+ +:+ :++:  +:+ +:+       ");
+            welcome.Add("+#+  +:+  +#+ +#++:++#   +#+       +#+        +#+    +:+ +#+  +:+  +#+ +#++:++#  ");
+            welcome.Add("+#+ +#+#+ +#+ +#+        +#+       +#+        +#+    +#+ +#+       +#+ +#+       ");
+            welcome.Add(" #+#+# #+#+#  #+#        #+#       #+#    #+# #+#    #+# #+#       #+# #+#       ");
+            welcome.Add("  ###   ###   ########## ########## ########   ########  ###       ### ##########");
+
+            PrintMenuSingleSpace(welcome.ToArray());
             Console.BackgroundColor = backgroundColor;
             Console.ForegroundColor = foregroundColor;
         }
          
         private static void PrintCampers()
         {
-            //Console.SetCursorPosition(0, Console.WindowHeight - Console.WindowHeight / 3);
             Console.BackgroundColor = backgroundColorForText;
             Console.ForegroundColor = foregroundColorForText;
-            Console.SetCursorPosition((Console.CursorLeft / 3), Console.CursorTop);
 
-            Console.WriteLine(" ::::::::      :::     ::::    ::::  :::::::::  :::::::::: :::::::::   ::::::::  ");
-            Console.WriteLine(":+:    :+:   :+: :+:   +:+:+: :+:+:+ :+:    :+: :+:        :+:    :+: :+:    :+: ");
-            Console.WriteLine("+:+         +:+   +:+  +:+ +:+:+ +:+ +:+    +:+ +:+        +:+    +:+ +:+        ");
-            Console.WriteLine("+#+        +#++:++#++: +#+  +:+  +#+ +#++:++#+  +#++:++#   +#++:++#:  +#++:++#++ ");
-            Console.WriteLine("+#+        +#+     +#+ +#+       +#+ +#+        +#+        +#+    +#+        +#+ ");
-            Console.WriteLine("#+#    #+# #+#     #+# #+#       #+# #+#        #+#        #+#    #+# #+#    #+# ");
-            Console.WriteLine(" ########  ###     ### ###       ### ###        ########## ###    ###  ########  ");
+            List<string> campers = new List<string>();
+            campers.Add(" ::::::::      :::     ::::    ::::  :::::::::  :::::::::: :::::::::   ::::::::  ");
+            campers.Add(":+:    :+:   :+: :+:   +:+:+: :+:+:+ :+:    :+: :+:        :+:    :+: :+:    :+: ");
+            campers.Add("+:+         +:+   +:+  +:+ +:+:+ +:+ +:+    +:+ +:+        +:+    +:+ +:+        ");
+            campers.Add("+#+        +#++:++#++: +#+  +:+  +#+ +#++:++#+  +#++:++#   +#++:++#:  +#++:++#++ ");
+            campers.Add("+#+        +#+     +#+ +#+       +#+ +#+        +#+        +#+    +#+        +#+ ");
+            campers.Add("#+#    #+# #+#     #+# #+#       #+# #+#        #+#        #+#    #+# #+#    #+# ");
+            campers.Add(" ########  ###     ### ###       ### ###        ########## ###    ###  ########  ");
+
+            PrintMenuSingleSpace(campers.ToArray());
             Console.BackgroundColor = backgroundColor;
             Console.ForegroundColor = foregroundColor;
         }
@@ -449,7 +487,6 @@ namespace Capstone.Menus
             Console.WriteLine(@"            ,@@@@@@@,                                ,@@@@@@@,                             ,@@@@@@@,                             ,@@@@@@@,                              ,@@@@@@@,                               ,@@@@@@@,                     ");
             Console.WriteLine(@"    ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.         ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.         ");
             Console.WriteLine(@" ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o       ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o      ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o     ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o      ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o       ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o        ");
-            Console.WriteLine(@",%&\%&&%&&%,@@@\@@@/@@@88\88888/88'     ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'    ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'   ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'    ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'     ,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'       ");
             Console.WriteLine(@"%&&%&%&/%&&%@@\@@/ /@@@88888\88888'     %&&%&%&/%&&%@@\@@/ /@@@88888\88888'    %&&%&%&/%&&%@@\@@/ /@@@88888\88888'   %&&%&%&/%&&%@@\@@/ /@@@88888\88888'    %&&%&%&/%&&%@@\@@/ /@@@88888\88888'     %&&%&%&/%&&%@@\@@/ /@@@88888\88888'       ");
             Console.WriteLine(@"%&&%/ %&%%&&@@\ V /@@' `88\8 `/88'      %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'     %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'    %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'     %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'      %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'        ");
             Console.WriteLine(@"`&%\ ` /%&'    |.|        \ '|8'        `&%\ ` /%&'    |.|        \ '|8'       `&%\ ` /%&'    |.|        \ '|8'      `&%\ ` /%&'    |.|        \ '|8'       `&%\ ` /%&'    |.|        \ '|8'        `&%\ ` /%&'    |.|        \ '|8'          ");

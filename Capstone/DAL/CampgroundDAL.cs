@@ -138,5 +138,44 @@ namespace Capstone.DAL
             }
             return null;
         }
+
+        public Park GetParkByCampgroundName(string name, string connectionString)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT park.* FROM park
+                                                      JOIN campground ON campground.park_id = park.park_id
+                                                      WHERE campground.name = @name", conn);
+                    cmd.Parameters.AddWithValue("@name", name);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Park p = new Park();
+
+                        p.Name = Convert.ToString(reader["name"]);
+                        p.Area = Convert.ToInt32(reader["area"]);
+                        p.ParkID = Convert.ToInt32(reader["park_id"]);
+                        p.Location = Convert.ToString(reader["location"]);
+                        p.EstablishDate = Convert.ToDateTime(reader["establish_date"]);
+                        p.Visitors = Convert.ToInt32(reader["visitors"]);
+                        p.Description = Convert.ToString(reader["description"]);
+
+                        return p;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+            return null;
+        }
     }
 }

@@ -61,8 +61,8 @@ namespace Capstone.DAL
         {
 
             List<Campsite> campsites = new List<Campsite>();
-            string campName = cg.Name;
-            int campNameId = 0;
+            string userCampgroundName = cg.Name;
+            int userCampgroundID = 0;
 
             try
             {
@@ -70,14 +70,13 @@ namespace Capstone.DAL
                 {
                     conn.Open();
                     SqlCommand cg_id = new SqlCommand("SELECT campground_id FROM campground WHERE campground.name = @name", conn);
-                    cg_id.Parameters.AddWithValue("@name", campName);
+                    cg_id.Parameters.AddWithValue("@name", userCampgroundName);
 
                     SqlDataReader reader = cg_id.ExecuteReader();
                     while (reader.Read())
                     {
-                        campNameId = Convert.ToInt32(reader["campground_id"]);
+                        userCampgroundID = Convert.ToInt32(reader["campground_id"]);
                     }
-                    //reader.Close();                    
                 }
             }
             catch (SqlException ex)
@@ -89,14 +88,19 @@ namespace Capstone.DAL
                 using (SqlConnection conn2 = new SqlConnection(connectionString))
                 {
                     conn2.Open();
-                    SqlCommand cmd = new SqlCommand(@"SELECT site.* FROM site
-                                                    LEFT JOIN reservation ON site.site_id = reservation.site_id 
-                                                    JOIN campground ON campground.campground_id = site.campground_id 
-                                                    WHERE (((@todate <= reservation.from_date) OR (@fromdate >= reservation.to_date))  
-                                                    OR reservation.reservation_id IS NULL)
-                                                    AND campground.name = @campName
-                                                    GROUP BY site.site_id, site.campground_id, site.site_number, site.max_occupancy, site.accessible, site.max_rv_length, site.utilities", conn2);
-                    cmd.Parameters.AddWithValue("@campName", campName);
+                    SqlCommand cmd = new SqlCommand(@"SELECT s.* 
+                                                      FROM site s
+                                                      WHERE NOT EXISTS
+                                                      (
+                                                      SELECT * FROM reservation r
+                                                      WHERE r.site_id = s.site_id
+                                                      AND r.from_date <= DATEADD(day, -1, @todate) 
+                                                      AND r.to_date >= DATEADD(day, 1, @fromdate) 
+                                                      )
+                                                      AND s.campground_id = @campgroundid
+                                                      GROUP BY site_id, site_number, s.campground_id,  
+                                                      max_occupancy, accessible, max_rv_length, utilities", conn2);
+                    cmd.Parameters.AddWithValue("@campgroundid", userCampgroundID);
                     cmd.Parameters.AddWithValue("@fromdate", desiredArrival);
                     cmd.Parameters.AddWithValue("@todate", desiredDeparture);
 
