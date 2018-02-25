@@ -104,7 +104,7 @@ namespace Capstone.Menus
 
             PrintMenuSingleSpace(new[] { "Please Select a Park for More Information" });
 
-            PrintTrees();
+            PrintTreesBottom();
             string userParkName = Console.ReadLine();
 
             Console.Clear();
@@ -158,7 +158,7 @@ namespace Capstone.Menus
             Console.WriteLine();
             PrintMenuDoubleSpaced(new[] { "1) View Campgrounds", "2) Search For Reservation", "3) Return to Park Selection Menu"});
 
-            PrintTrees();
+            PrintTreesBottom();
 
             string input = CLIHelper.GetString("Select a Command");
 
@@ -303,7 +303,7 @@ namespace Capstone.Menus
             
             Campsite reservationSite = new Campsite();//create a new campsite so that the user can book their stay
 
-            PrintTrees();
+            PrintTreesBottom();
             int userSelectedSiteID = CLIHelper.GetInteger("What site should be reserved?(To Return to the Main Menu press (0))");
 
             //first verify that the site_id entered exists from the list provided to the user only!
@@ -466,6 +466,7 @@ namespace Capstone.Menus
         {
             Console.BackgroundColor = backgroundColorForText;
             Console.ForegroundColor = foregroundColorForText;
+            Console.SetCursorPosition(0, Console.WindowHeight - Console.WindowHeight / 3);
 
             List<string> campers = new List<string>();
             campers.Add(" ::::::::      :::     ::::    ::::  :::::::::  :::::::::: :::::::::   ::::::::  ");
@@ -483,6 +484,22 @@ namespace Capstone.Menus
 
         private static void PrintTrees()
         {
+            Console.ForegroundColor = foregroundColorForText;
+            Console.WriteLine(@"            ,@@@@@@@,                                ,@@@@@@@,                             ,@@@@@@@,                             ,@@@@@@@,                              ,@@@@@@@,                               ,@@@@@@@,                     ");
+            Console.WriteLine(@"    ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.         ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.         ");
+            Console.WriteLine(@" ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o       ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o      ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o     ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o      ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o       ,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o        ");
+            Console.WriteLine(@"%&&%&%&/%&&%@@\@@/ /@@@88888\88888'     %&&%&%&/%&&%@@\@@/ /@@@88888\88888'    %&&%&%&/%&&%@@\@@/ /@@@88888\88888'   %&&%&%&/%&&%@@\@@/ /@@@88888\88888'    %&&%&%&/%&&%@@\@@/ /@@@88888\88888'     %&&%&%&/%&&%@@\@@/ /@@@88888\88888'       ");
+            Console.WriteLine(@"%&&%/ %&%%&&@@\ V /@@' `88\8 `/88'      %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'     %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'    %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'     %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'      %&&%/ %&%%&&@@\ V /@@' `88\8 `/88'        ");
+            Console.WriteLine(@"`&%\ ` /%&'    |.|        \ '|8'        `&%\ ` /%&'    |.|        \ '|8'       `&%\ ` /%&'    |.|        \ '|8'      `&%\ ` /%&'    |.|        \ '|8'       `&%\ ` /%&'    |.|        \ '|8'        `&%\ ` /%&'    |.|        \ '|8'          ");
+            Console.WriteLine(@"    |o|        | |         | |              |o|        | |         | |             |o|        | |         | |            |o|        | |         | |             |o|        | |         | |              |o|        | |         | |            ");
+            Console.WriteLine(@"    |.|        | |         | |              |.|        | |         | |             |.|        | |         | |            |.|        | |         | |             |.|        | |         | |              |.|        | |         | |            ");
+            Console.WriteLine(@" \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_   \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_  \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_ \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_  \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_   \\/ ._\//_/__/  ,\_//__\\/.  \_//__/_    ");
+            Console.ForegroundColor = foregroundColor;
+        }
+
+        private static void PrintTreesBottom()
+        {
+            Console.SetCursorPosition(0, Console.WindowHeight - Console.WindowHeight / 3);
             Console.ForegroundColor = foregroundColorForText;
             Console.WriteLine(@"            ,@@@@@@@,                                ,@@@@@@@,                             ,@@@@@@@,                             ,@@@@@@@,                              ,@@@@@@@,                               ,@@@@@@@,                     ");
             Console.WriteLine(@"    ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.         ,,,.   ,@@@@@@/@@,  .oo8888o.          ,,,.   ,@@@@@@/@@,  .oo8888o.           ,,,.   ,@@@@@@/@@,  .oo8888o.         ");
