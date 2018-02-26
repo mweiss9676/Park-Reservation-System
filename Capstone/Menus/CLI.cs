@@ -601,9 +601,15 @@ namespace Capstone.Menus
         private static void PrintReservationInformation(Reservation reservation)
         {
             PrintTrees();
-            Console.WriteLine($"We have you staying from {reservation.FromDate} through {reservation.ToDate}.");
-            Console.WriteLine($"Your stay is under the name {reservation.Name} at site: {reservation.SiteID}");
-            Console.WriteLine("Enjoy your stay!");
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+
+            PrintMenuSingleSpaced(new[] { $"We have you staying from {reservation.FromDate} through {reservation.ToDate}.",
+                                          $"Your stay is under the name {reservation.Name} at site: {reservation.SiteID}",
+                                           "Enjoy your stay!"});
+            Console.WriteLine();
             PrintMenuDoubleSpaced(new[] { "1) Return to the Main Menu", "2) Quit" });
             PrintTreesBottom();
             string option = CLIHelper.GetString("");
