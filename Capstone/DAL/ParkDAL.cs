@@ -156,5 +156,67 @@ namespace Capstone.DAL
             }
             return p;
         }
+
+        public List<Campsite> BookReservationByPark(DateTime arrival, DateTime departure, Park park, string connectionString)
+        {
+            List<Campsite> campsites = new List<Campsite>();
+
+            int fromMonth = arrival.Month;
+            int toMonth = departure.Month;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT s.*
+                                                      FROM site s
+                                                      JOIN campground c ON s.campground_id = c.campground_id
+                                                      JOIN park p ON c.park_id = p.park_id
+                                                      WHERE NOT EXISTS
+                                                      (
+                                                        SELECT *
+                                                        FROM reservation r
+                                                        WHERE r.site_id = s.site_id
+                                                        AND r.from_date <= DATEADD(day, -1, @departure)
+                                                        AND r.to_date >= DATEADD(day, 1, @arrival)
+                                                      )
+                                                      AND p.name = @park_name
+                                                      AND (RIGHT(c.open_from_mm, 2) <= @from_month
+                                                      AND RIGHT(c.open_to_mm, 2) > @to_month)
+                                                      GROUP BY site_id, site_number, s.campground_id
+                                                      , max_occupancy, accessible, max_rv_length, utilities", conn);
+
+                    cmd.Parameters.AddWithValue("@park_name", park.Name);
+                    cmd.Parameters.AddWithValue("@departure", departure);
+                    cmd.Parameters.AddWithValue("@arrival", arrival);
+                    cmd.Parameters.AddWithValue("@from_month", fromMonth);
+                    cmd.Parameters.AddWithValue("@to_month", toMonth);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Campsite cs = new Campsite();
+
+                        cs.SiteID = Convert.ToInt32(reader["site_id"]);
+                        cs.SiteNumber = Convert.ToInt32(reader["site_number"]);
+                        cs.MaxOccupancy = Convert.ToInt32(reader["max_occupancy"]);
+                        cs.Accessible = Convert.ToBoolean(reader["accessible"]);
+                        cs.Utilities = Convert.ToBoolean(reader["utilities"]);
+                        cs.MaxRvLength = Convert.ToInt32(reader["max_rv_length"]);
+
+                        campsites.Add(cs);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return campsites;
+        }
     }
 }
