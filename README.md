@@ -67,6 +67,7 @@ No console line application would be complete with a ridiculous piece of ASCII a
 ![The Big SQL Query](images-for-githubpages/sqlquery.png)
 This SQL Query was known as the big one. It took me way longer to figure out than I should probably admit and I thought I had it solved several times before finding some edge case that it didn't work for. But it all worked out in the end and that moment of discovery when I finally got it working was well worth it!
 
+
 ![The Other Big SQL Query](images-for-githubpages/sqlquery2.png)
 This monster was fun as well. This is the bonus query that let's you search by park. The interesting thing about this query is that the open-to and open-from months were integers but had to be compared against DateTimes. Grabbing the rightmost digits from our DateTimes we were able to make a simple comparison of integers!  
 
